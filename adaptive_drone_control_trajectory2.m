@@ -55,7 +55,6 @@ desired_orientation = randrot;
 
 % Init error
 desired_position = [cos(0);sin(0);(sin(0)+1)*2];
-% desired_position = [0;0;0];
 orientation_error = orientation;
 position_error = position - desired_position;
 
