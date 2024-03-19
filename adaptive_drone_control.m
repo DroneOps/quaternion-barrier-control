@@ -23,8 +23,8 @@ MAX_TRANS_C = 9.5;
 MAX_ROT_C = 10;
 
 % Randomly initialize position
-% position = rand(3,1)*20-10;
-position = [10;-5;6];
+position = rand(3,1)*20-10;
+% position = [10;-5;6];
 
 % Non-Randomly initialize orientation
 orientation = quaternion(1,0,0,0);

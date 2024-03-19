@@ -23,8 +23,8 @@ MAX_TRANS_C = 9.5;
 MAX_ROT_C = 10;
 
 % Randomly initialize position
-% position = rand(3,1)*20-10;
-position = [10;-5;6];
+position = rand(3,1)*20-10;
+% position = [10;-5;6];
 
 % Randomly intialize orientation
 % theta_x = (rand - 0.5) * pi/2;  % Ángulo alrededor del eje x
@@ -53,8 +53,8 @@ angular_kd1 = 6;
 desired_orientation = randrot;
 
 % Init error
-% desired_position = [cos(0);sin(0);(sin(0)+1)*2];
-desired_position = [0;0;0];
+desired_position = [cos(0);sin(0);(sin(0)+1)*2];
+% desired_position = [0;0;0];
 orientation_error = orientation;
 position_error = position - desired_position;
 
@@ -69,7 +69,7 @@ time = zeros(1, TIME_STEPS);
 
 % Simulation loop
 while t < SIM_TIME
-    % desired_position = [cos(t);sin(t);(sin(0.05*t)+1)*2];
+    desired_position = [cos(t);sin(t);(sin(0.05*t)+1)*2];
     position_error_prev  = position_error;
     position_error = position - desired_position;
     t = t + DELTA_TIME;
