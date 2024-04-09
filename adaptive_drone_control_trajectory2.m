@@ -14,7 +14,7 @@ BODY_FRAME_THRUST = [0;0;1];
 
 % Simulation parameters
 SIM_TIME = 20; % seconds
-DELTA_TIME = 0.01;
+DELTA_TIME = 0.001;
 TIME_STEPS = SIM_TIME / DELTA_TIME;
 i = 1;
 t = 0;
@@ -46,8 +46,8 @@ ang_kd_fixed = 6;
 ang_kp = ang_kp_fixed;
 ang_kd = ang_kd_fixed;
 
-lambda = [0.12 0. 15 0.002];
-alpha = [25 0.005 20 1.5];
+lambda = [2 0.003 7 0.005];
+alpha = [12 0.003 10 5];
 
 % Desired variables
 
@@ -82,10 +82,10 @@ while t < SIM_TIME
     kp = kp + kp_dot * DELTA_TIME;
     kd = kd + kd_dot * DELTA_TIME;
 
-    if norm(position_error) < 0.0005
-        kp = kp_fixed;
-        kd = kd_fixed;
-    end
+    % if norm(position_error) < 0.0005
+    %     kp = kp_fixed;
+    %     kd = kd_fixed;
+    % end
     
     % Translational Control
     velocity_error = (position_error - position_error_prev)/DELTA_TIME;
@@ -112,7 +112,7 @@ while t < SIM_TIME
 
     ang_kp = ang_kp + ang_kp_dot * DELTA_TIME;
     ang_kd = ang_kd + ang_kd_dot * DELTA_TIME;
-
+    
     % if norm(orientation_error) < 0.0005
     %     ang_kp = ang_kp_fixed;
     %     ang_kd = ang_kd_fixed;
@@ -148,33 +148,51 @@ end
 
 %Plotting
 figure;
-plot3(plot_position(1, :), plot_position(2, :), plot_position(3, :));
-title('Trajectory');
-xlabel('X');
-ylabel('Y');
-zlabel('Z');
-grid on;
+set(gcf,"Color",[1,1,1])
+set(gcf,"Position",[50,50,1920,1080])
+plot3(plot_position(1, :), plot_position(2, :), plot_position(3, :),'LineWidth',2.5);
+hold on
+plot3(plot_desired_position(1, :), plot_desired_position(2, :), plot_desired_position(3, :), 'r-.', 'LineWidth',2.5);
+xlabel('Coord. X [m]','FontSize',24);
+ylabel('Coord. Y [m]','FontSize',24);
+zlabel('Coord. Z [m]','FontSize',24);
+legend('Position ', 'Reference ', 'FontSize', 24)
+axis([-2 2 -2 2 -5 5])
+grid off;
+print('../Plots/3D_Trajectory', '-depsc2')
 
 figure;
-plot(time, plot_attitude(1, :), 'k');
+set(gcf,"Color",[1,1,1])
+set(gcf,"Position",[50,50,1920,1080])
+plot(time, plot_attitude(1, :), 'k','LineWidth',2.5);
 hold on
-plot(time, plot_attitude(2, :), 'r');
-plot(time, plot_attitude(3, :), 'g');
-plot(time, plot_attitude(4, :), 'b');
-plot(time, plot_desired_attitude(1, :), 'k-.');
-plot(time, plot_desired_attitude(2, :), 'r-.');
-plot(time, plot_desired_attitude(3, :), 'g-.');
-plot(time, plot_desired_attitude(4, :), 'b-.');
+plot(time, plot_attitude(2, :), 'r','LineWidth',2.5);
+plot(time, plot_attitude(3, :), 'g','LineWidth',2.5);
+plot(time, plot_attitude(4, :), 'b','LineWidth',2.5);
+plot(time, plot_desired_attitude(1, :), 'k-.','LineWidth',2.5);
+plot(time, plot_desired_attitude(2, :), 'r-.','LineWidth',2.5);
+plot(time, plot_desired_attitude(3, :), 'g-.','LineWidth',2.5);
+plot(time, plot_desired_attitude(4, :), 'b-.','LineWidth',2.5);
+legend('q_0','q_1','q_2','q_3','q_{r0}','q_{r1}','q_{r2}','q_{r3}','FontSize',22);
+xlabel('Time [s]', 'FontSize',24);
+ylabel('Attitude Quaternion', 'FontSize',24);
+grid off;
+box("off");
+print('../Plots/Attitude', '-depsc2')
 
 figure;
-plot(time,plot_position(1, :), 'k');
+set(gcf,"Color",[1,1,1])
+set(gcf,"Position",[50,50,1920,1080])
+plot(time,plot_position(1, :), 'k','LineWidth',2.5);
 hold on
-plot(time,plot_position(2, :), 'b');
-plot(time,plot_position(3, :), 'r');
-plot(time,plot_desired_position(1, :), 'k-.');
-plot(time,plot_desired_position(2, :), 'b-.');
-plot(time,plot_desired_position(3, :), 'r-.');
-title('posición del dron (metros)');
-xlabel('Tiempo');
-ylabel('Valor');
-grid on;
+plot(time,plot_position(2, :), 'b','LineWidth',2.5);
+plot(time,plot_position(3, :), 'r','LineWidth',2.5);
+plot(time,plot_desired_position(1, :), 'k-.','LineWidth',2.5);
+plot(time,plot_desired_position(2, :), 'b-.','LineWidth',2.5);
+plot(time,plot_desired_position(3, :), 'r-.','LineWidth',2.5);
+legend('p_0','p_1','p_2', 'FontSize',24)
+xlabel('Time [s]','FontSize',24);
+ylabel('Position [m]','FontSize',24);
+grid off;
+box("off");
+print('../Plots/Position', '-depsc2')
