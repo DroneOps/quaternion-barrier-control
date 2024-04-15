@@ -6,10 +6,13 @@ clc
 % Drone parameters
 MASS = 0.5; % kg
 GRAVITY = [0;0;9.81];
-INERTIA_X = 5e-3;
-INERTIA_Y = 5e-3;
-INERTIA_Z = 1e-2;
-INERTIA = diag([INERTIA_X, INERTIA_X, INERTIA_Z]);
+INERTIA = [16.6e-6, 0.83e-6, 0.72e-6;
+        0.83e-6, 16.6e-6, 1.8e-6;
+        0.72e-6, 1.8e-6, 29.3e-6];
+% INERTIA_X = 5e-3;
+% INERTIA_Y = 5e-3;
+% INERTIA_Z = 1e-2;
+% INERTIA = diag([INERTIA_X, INERTIA_X, INERTIA_Z]);
 BODY_FRAME_THRUST = [0;0;1];
 
 % Simulation parameters
@@ -23,8 +26,8 @@ MAX_TRANS_C = 9.5;
 MAX_ROT_C = 10;
 
 % Randomly initialize position
-position = rand(3,1)*20-10;
-% position = [10;-5;6];
+% position = rand(3,1)*20-10;
+position = [-2.5;-2.5;2];
 
 % Non-Randomly initialize orientation
 orientation = quaternion(1,0,0,0);
@@ -34,20 +37,31 @@ velocity_error = velocity;
 angular_velocity = [0;0;0];
 
 % Control Variables
-kp_fixed = 4;
-kd_fixed = 2;
+trans_kp_o = [4;4;4];
+trans_kd_o = [3.75;3.75;3.75];
 
-kp = kp_fixed;
-kd = kd_fixed;
+trans_kp = trans_kp_o;
+trans_kd = trans_kd_o;
 
-ang_kp_fixed = 20;
-ang_kd_fixed = 6;
+ang_kp_o = [28;28;28];
+ang_kd_o = [10;10;10];
 
-ang_kp = ang_kp_fixed;
-ang_kd = ang_kd_fixed;
+ang_kp = ang_kp_o;
+ang_kd = ang_kd_o;
 
-lambda = [2 0.003 7 0.005];
-alpha = [12 0.003 10 5];
+% lambda = [2 0.003 0.05 2];
+% alpha = [0 0 0 0];
+
+%lambda 1 affects the proportional gain both related to the reference
+% and the restriction
+% lambda 2 affects oscilations related to lambda 1
+% lambda 3 affects velocity and 4 asfects its rate of change
+% so on can be inferred for alph, however, restrictions are only related
+% to position.
+lambda = [6 0.0075 0.5 15];
+alpha = [0.05 0.05 0.05 0.05];
+
+restriction_radius = 3;
 
 % Desired variables
 
@@ -55,6 +69,7 @@ desired_orientation = randrot;
 
 % Init error
 desired_position = [cos(0);sin(0);(sin(0)+1)*2];
+% desired_position = [t;t;t];
 orientation_error = orientation;
 position_error = position - desired_position;
 
@@ -70,26 +85,29 @@ time = zeros(1, TIME_STEPS);
 % Simulation loop
 while t < SIM_TIME
     desired_position = [cos(t);sin(t);(sin(0.05*t)+1)*2];
+    % desired_position = [t;t;t];
     position_error_prev  = position_error;
     position_error = position - desired_position;
+    r = sqrt(position(1)^2 + position(2)^2 + position(3)^2); %position relative to the origin
     t = t + DELTA_TIME;
 
     % Estimate translational control gains
+    
+    for j = 1:3
+       % kp_dot = (-lambda(1)/(restriction_radius-norm(r)^2))*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
+       %$ kd_dot = -lambda(3)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
 
-    kp_dot = norm(-lambda(1)*(position_error) + lambda(2)*(kp_fixed - kp));
-    kd_dot = norm(-lambda(3)*(velocity_error) + lambda(4)*(kd_fixed - kd));
+        kp_dot = lambda(1)*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
+        kd_dot = lambda(3)*(position_error(j))*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
 
-    kp = kp + kp_dot * DELTA_TIME;
-    kd = kd + kd_dot * DELTA_TIME;
-
-    % if norm(position_error) < 0.0005
-    %     kp = kp_fixed;
-    %     kd = kd_fixed;
-    % end
+        trans_kp(j) = trans_kp(j) + kp_dot * DELTA_TIME;
+        trans_kd(j) = trans_kd(j) + kd_dot * DELTA_TIME;
+    end
+ 
     
     % Translational Control
     velocity_error = (position_error - position_error_prev)/DELTA_TIME;
-    trans_control = -MASS*(kp*position_error + kd*(velocity_error) - GRAVITY); 
+    trans_control = -MASS*(trans_kp.*position_error + trans_kd.*(velocity_error) - GRAVITY); 
 
     control_thrust = trans_control/norm(trans_control);
 
@@ -98,27 +116,30 @@ while t < SIM_TIME
     desired_orientation = normalize(desired_orientation);
     orientation_error_prev =  orientation_error;
     orientation_error = orientation*(desired_orientation');
+    orientation_error_vector = rotvec(orientation_error)'; %Euler angle representation
     angular_velocity_error = rotvec(orientation_error*orientation_error_prev')'/DELTA_TIME;
-    velocity_error = position_error - position_error_prev;
+    
     if norm(rotvec(orientation_error)) > pi || norm(rotvec(orientation_error))< -pi
         disp('Invirtiendo referencia')
         desired_orientation = -desired_orientation;
-        orientation_error = (desired_orientation')*orientation;
+        orientation_error = (desired_orientation)*(orientation');
     end 
 
     % Estimate rotational control gains}
-    ang_kp_dot = norm(-alpha(1)*(position_error) + alpha(2)*(kp_fixed - kp));
-    ang_kd_dot = norm(-alpha(3)*(velocity_error) + alpha(4)*(kd_fixed - kd));
+    for k = 1:3
+        ang_kp_dot = alpha(1)*(orientation_error_vector(k)) + alpha(2)*(ang_kp_o(k) - ang_kp(k));
+        ang_kd_dot = alpha(3)*(angular_velocity_error(k)) + alpha(4)*(ang_kd_o(k) - ang_kd(k));
 
-    ang_kp = ang_kp + ang_kp_dot * DELTA_TIME;
-    ang_kd = ang_kd + ang_kd_dot * DELTA_TIME;
-    
+        ang_kp(k) = ang_kp(k) + ang_kp_dot * DELTA_TIME;
+        ang_kd(k) = ang_kd(k) + ang_kd_dot * DELTA_TIME;
+    end
+
     % if norm(orientation_error) < 0.0005
     %     ang_kp = ang_kp_fixed;
     %     ang_kd = ang_kd_fixed;
     % end
-
-    orientation_control = (-ang_kp*(rotvec(orientation_error)')-ang_kd*angular_velocity_error);
+    
+    orientation_control = (-ang_kp.*orientation_error_vector)-(ang_kd.*angular_velocity_error);
 
     torque = INERTIA*orientation_control + cross(angular_velocity,INERTIA*angular_velocity);
         
@@ -153,11 +174,11 @@ set(gcf,"Position",[50,50,1920,1080])
 plot3(plot_position(1, :), plot_position(2, :), plot_position(3, :),'LineWidth',2.5);
 hold on
 plot3(plot_desired_position(1, :), plot_desired_position(2, :), plot_desired_position(3, :), 'r-.', 'LineWidth',2.5);
-xlabel('Coord. X [m]','FontSize',12);
-ylabel('Coord. Y [m]','FontSize',12);
-zlabel('Coord. Z [m]','FontSize',12);
-legend('Position ', 'Reference ', 'fontsize')
-axis([-2 2 -2 2 -5 5])
+xlabel('Coord. X [m]','FontSize',24);
+ylabel('Coord. Y [m]','FontSize',24);
+zlabel('Coord. Z [m]','FontSize',24);
+legend('Position ', 'Reference ', 'FontSize', 24)
+% axis([-2 2 -2 2 -5 5])
 grid off;
 print('../Plots/3D_Trajectory', '-depsc2')
 
@@ -173,9 +194,9 @@ plot(time, plot_desired_attitude(1, :), 'k-.','LineWidth',2.5);
 plot(time, plot_desired_attitude(2, :), 'r-.','LineWidth',2.5);
 plot(time, plot_desired_attitude(3, :), 'g-.','LineWidth',2.5);
 plot(time, plot_desired_attitude(4, :), 'b-.','LineWidth',2.5);
-legend('q_0','q_1','q_2','q_3','q_{r0}','q_{r1}','q_{r2}','q_{r3}');
-xlabel('Time [s]');
-ylabel('Attitude Quaternion');
+legend('q_0','q_1','q_2','q_3','q_{r0}','q_{r1}','q_{r2}','q_{r3}','FontSize',22);
+xlabel('Time [s]', 'FontSize',24);
+ylabel('Attitude Quaternion', 'FontSize',24);
 grid off;
 box("off");
 print('../Plots/Attitude', '-depsc2')
@@ -190,9 +211,13 @@ plot(time,plot_position(3, :), 'r','LineWidth',2.5);
 plot(time,plot_desired_position(1, :), 'k-.','LineWidth',2.5);
 plot(time,plot_desired_position(2, :), 'b-.','LineWidth',2.5);
 plot(time,plot_desired_position(3, :), 'r-.','LineWidth',2.5);
-legend('p_0','p_1','p_2')
-xlabel('Time [s]');
-ylabel('Position [m]');
+% ylim([-5 5])
+legend('p_0','p_1','p_2', 'FontSize',24)
+xlabel('Time [s]','FontSize',24);
+ylabel('Position [m]','FontSize',24);
 grid off;
 box("off");
 print('../Plots/Position', '-depsc2')
+
+ a=plot_position(1, 6000)-plot_desired_position(1,6000)
+ b=plot_position(2, 5000)-plot_desired_position(2,5000)

@@ -6,10 +6,13 @@ clc
 % Drone parameters
 MASS = 0.5; % kg
 GRAVITY = [0;0;9.81];
+INERTIA = [16.6e-6, 0.83e-6, 0.72e-6;
+        0.83e-6, 16.6e-6, 1.8e-6;
+        0.72e-6, 1.8e-6, 29.3e-6];
 INERTIA_X = 5e-3;
 INERTIA_Y = 5e-3;
 INERTIA_Z = 1e-2;
-INERTIA = diag([INERTIA_X, INERTIA_X, INERTIA_Z]);
+% INERTIA = diag([INERTIA_X, INERTIA_X, INERTIA_Z]);
 BODY_FRAME_THRUST = [0;0;1];
 
 % Simulation parameters
@@ -38,13 +41,13 @@ velocity_error = velocity;
 angular_velocity = [0;0;0];
 
 % Control Variables
-kp = 4;
+kp = 1;
 ki= 0;
-kd1 = 2;
+kd1 = 1;
 
-angular_kp = 20;
+angular_kp = 1;
 angular_ki = 0;
-angular_kd1 = 6;
+angular_kd1 = 1;
 
 
 

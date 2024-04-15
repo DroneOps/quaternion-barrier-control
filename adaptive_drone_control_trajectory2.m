@@ -107,8 +107,8 @@ while t < SIM_TIME
     end 
 
     % Estimate rotational control gains}
-    ang_kp_dot = norm(-alpha(1)*(position_error) + alpha(2)*(kp_fixed - kp));
-    ang_kd_dot = norm(-alpha(3)*(velocity_error) + alpha(4)*(kd_fixed - kd));
+    ang_kp_dot = norm(-alpha(1)*(position_error) + alpha(2)*(ang_kp_fixed - ang_kp));
+    ang_kd_dot = norm(-alpha(3)*(velocity_error) + alpha(4)*(ang_kd_fixed - ang_kd));
 
     ang_kp = ang_kp + ang_kp_dot * DELTA_TIME;
     ang_kd = ang_kd + ang_kd_dot * DELTA_TIME;
