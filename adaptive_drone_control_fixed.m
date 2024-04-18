@@ -98,7 +98,7 @@ while t < SIM_TIME
        %$ kd_dot = -lambda(3)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
 
         kp_dot = lambda(1)*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
-        kd_dot = lambda(3)*(position_error(j))*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
+        kd_dot = lambda(3)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
 
         trans_kp(j) = trans_kp(j) + kp_dot * DELTA_TIME;
         trans_kd(j) = trans_kd(j) + kd_dot * DELTA_TIME;

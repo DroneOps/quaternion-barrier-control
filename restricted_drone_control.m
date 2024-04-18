@@ -16,7 +16,7 @@ INERTIA = [16.6e-6, 0.83e-6, 0.72e-6;
 BODY_FRAME_THRUST = [0;0;1];
 
 % Simulation parameters
-SIM_TIME = 20; % seconds
+SIM_TIME = 40; % seconds
 DELTA_TIME = 0.001;
 TIME_STEPS = SIM_TIME / DELTA_TIME;
 i = 1;
@@ -27,7 +27,8 @@ MAX_ROT_C = 10;
 
 % Randomly initialize position
 % position = rand(3,1)*20-10;
-position = [-2.5;-2.5;2];
+% position = [0;0;0];
+position = [-1;-1;1];
 
 % Non-Randomly initialize orientation
 orientation = quaternion(1,0,0,0);
@@ -37,7 +38,7 @@ velocity_error = velocity;
 angular_velocity = [0;0;0];
 
 % Control Variables
-trans_kp_o = [4;4;4];
+trans_kp_o = [4;4;3];
 trans_kd_o = [3.75;3.75;3.75];
 
 trans_kp = trans_kp_o;
@@ -54,21 +55,22 @@ ang_kd = ang_kd_o;
 
 %lambda 1 affects the proportional gain both related to the reference
 % and the restriction
-% lambda 2 affects oscilations related to lambda 1
-% lambda 3 affects velocity and 4 asfects its rate of change
+% lambda 2 affects the rate of change of said gain
+% lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [6 0.0075 0.5 15];
-alpha = [0.05 0.05 0.05 0.05];
+lambda = [1.5 0.005 1.5 0.75];
+alpha = [1 1 1 1];
 
-restriction_radius = 3;
+restriction_radius = 2;
+lambda_max = restriction_radius^2;
 
 % Desired variables
 
 desired_orientation = randrot;
 
 % Init error
-desired_position = [cos(0);sin(0);(sin(0)+1)*2];
+desired_position = [cos(0);sin(0);0.1*t];
 % desired_position = [t;t;t];
 orientation_error = orientation;
 position_error = position - desired_position;
@@ -84,21 +86,23 @@ time = zeros(1, TIME_STEPS);
 
 % Simulation loop
 while t < SIM_TIME
-    desired_position = [cos(t);sin(t);(sin(0.05*t)+1)*2];
+    desired_position = [cos(t);sin(t);0.05*t];
+    % desired_position = [cos(t);0.05*t;sin(t)];
     % desired_position = [t;t;t];
     position_error_prev  = position_error;
     position_error = position - desired_position;
+    velocity_error = (position_error - position_error_prev)/DELTA_TIME;
     r = sqrt(position(1)^2 + position(2)^2 + position(3)^2); %position relative to the origin
     t = t + DELTA_TIME;
 
     % Estimate translational control gains
     
     for j = 1:3
-       % kp_dot = (-lambda(1)/(restriction_radius-norm(r)^2))*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
-       %$ kd_dot = -lambda(3)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
+       kp_dot = (-lambda(1)/(lambda_max-norm(r)^2))*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
+       kd_dot = lambda(3)*position_error(j)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
 
-        kp_dot = lambda(1)*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
-        kd_dot = lambda(3)*(position_error(j))*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
+        % kp_dot = lambda(1)*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
+        % kd_dot = lambda(3)*(position_error(j))*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
 
         trans_kp(j) = trans_kp(j) + kp_dot * DELTA_TIME;
         trans_kd(j) = trans_kd(j) + kd_dot * DELTA_TIME;
@@ -106,7 +110,7 @@ while t < SIM_TIME
  
     
     % Translational Control
-    velocity_error = (position_error - position_error_prev)/DELTA_TIME;
+    
     trans_control = -MASS*(trans_kp.*position_error + trans_kd.*(velocity_error) - GRAVITY); 
 
     control_thrust = trans_control/norm(trans_control);
@@ -174,11 +178,15 @@ set(gcf,"Position",[50,50,1920,1080])
 plot3(plot_position(1, :), plot_position(2, :), plot_position(3, :),'LineWidth',2.5);
 hold on
 plot3(plot_desired_position(1, :), plot_desired_position(2, :), plot_desired_position(3, :), 'r-.', 'LineWidth',2.5);
+[sx,sy,sz] = sphere(30);
+s = surf(sx*restriction_radius,sy*restriction_radius,sz*restriction_radius);
+s.FaceAlpha = 0.5;
+s.EdgeColor = 'none';
 xlabel('Coord. X [m]','FontSize',24);
 ylabel('Coord. Y [m]','FontSize',24);
 zlabel('Coord. Z [m]','FontSize',24);
 legend('Position ', 'Reference ', 'FontSize', 24)
-% axis([-2 2 -2 2 -5 5])
+axis([-3 3 -3 3 -3 3])
 grid off;
 print('../Plots/3D_Trajectory', '-depsc2')
 
@@ -211,7 +219,7 @@ plot(time,plot_position(3, :), 'r','LineWidth',2.5);
 plot(time,plot_desired_position(1, :), 'k-.','LineWidth',2.5);
 plot(time,plot_desired_position(2, :), 'b-.','LineWidth',2.5);
 plot(time,plot_desired_position(3, :), 'r-.','LineWidth',2.5);
-% ylim([-5 5])
+ylim([-5 5])
 legend('p_0','p_1','p_2', 'FontSize',24)
 xlabel('Time [s]','FontSize',24);
 ylabel('Position [m]','FontSize',24);
@@ -219,5 +227,3 @@ grid off;
 box("off");
 print('../Plots/Position', '-depsc2')
 
- a=plot_position(1, 6000)-plot_desired_position(1,6000)
- b=plot_position(2, 5000)-plot_desired_position(2,5000)
