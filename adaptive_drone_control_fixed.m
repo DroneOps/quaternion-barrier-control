@@ -27,7 +27,7 @@ MAX_ROT_C = 10;
 
 % Randomly initialize position
 % position = rand(3,1)*20-10;
-position = [-2.5;-2.5;2];
+position = [0;0;0];
 
 % Non-Randomly initialize orientation
 orientation = quaternion(1,0,0,0);
@@ -61,7 +61,7 @@ ang_kd = ang_kd_o;
 lambda = [6 0.0075 0.5 15];
 alpha = [0.05 0.05 0.05 0.05];
 
-restriction_radius = 3;
+restriction_radius = 1.5;
 
 % Desired variables
 
@@ -176,11 +176,15 @@ set(gcf,"Position",[50,50,1920,1080])
 plot3(plot_position(1, :), plot_position(2, :), plot_position(3, :),'LineWidth',2.5);
 hold on
 plot3(plot_desired_position(1, :), plot_desired_position(2, :), plot_desired_position(3, :), 'r-.', 'LineWidth',2.5);
+[sx,sy,sz] = sphere(30);
+s = surf(sx*restriction_radius,sy*restriction_radius,sz*restriction_radius);
+s.FaceAlpha = 0.5;
+s.EdgeColor = 'none';
 xlabel('Coord. X [m]','FontSize',24);
 ylabel('Coord. Y [m]','FontSize',24);
 zlabel('Coord. Z [m]','FontSize',24);
 legend('Position ', 'Reference ', 'FontSize', 24)
-% axis([-2 2 -2 2 -5 5])
+axis([-3 3 -3 3 -3 3])
 grid off;
 print('../Plots/3D_Trajectory', '-depsc2')
 

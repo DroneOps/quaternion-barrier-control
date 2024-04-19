@@ -16,7 +16,7 @@ INERTIA = [16.6e-6, 0.83e-6, 0.72e-6;
 BODY_FRAME_THRUST = [0;0;1];
 
 % Simulation parameters
-SIM_TIME = 21; % seconds
+SIM_TIME = 30; % seconds
 DELTA_TIME = 0.001;
 TIME_STEPS = SIM_TIME / DELTA_TIME;
 i = 1;
@@ -64,8 +64,8 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [1.5 0.005 1 0.0015];
-alpha = [1 1 1 1];
+lambda = [1.25 0.005 2.5 0.025];
+alpha = [3 0.005 4 0.005];
 
 restriction_radius = 1.5;
 lambda_max = restriction_radius^2;
@@ -106,7 +106,7 @@ while t < SIM_TIME
     
     for j = 1:3
        kp_dot = (-lambda(1)/(lambda_max-norm(r)^2))*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
-       kd_dot = lambda(3)*(velocity_error(j))*(position_error(j))*sign(position_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
+       kd_dot = lambda(3)*(velocity_error(j))*(position_error(j))*sign(position_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j))*sign(position_error(j));
 
         % kp_dot = -lambda(1)*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
         % kd_dot = lambda(3)*(position_error(j))*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));

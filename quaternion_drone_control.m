@@ -22,7 +22,8 @@ MAX_TRANS_C = 9.5;
 MAX_ROT_C = 10;
 
 % Randomly initialize position
-position = rand(3,1)*20-10;
+% position = rand(3,1)*20-10;
+position = 0;
 
 % Randomly intialize orientation
 theta_x = (rand - 0.5) * pi/2;  % Ángulo alrededor del eje x
@@ -46,8 +47,8 @@ angular_kd2 = 6;
 k_gravity = -0.5525;
 
 % Desired variables
-desired_position = [0;0;0];
-desired_orientation = randrot;
+desired_position = [0.4+cos(t);sin(t);sin(0.5*t)/2];
+% desired_orientation = randrot;
 
 % Init error
 orientation_error = orientation;
@@ -64,6 +65,7 @@ time = zeros(1, TIME_STEPS);
 
 % Simulation loop
 while t < SIM_TIME
+    desired_position = [0.4+cos(t);sin(t);sin(0.5*t)/2];
     t = t + DELTA_TIME;
     % Translational Control
     trans_control = -kp*(position - desired_position) - kd1*velocity;
@@ -125,6 +127,8 @@ end
 %Plotting
 figure;
 plot3(plot_position(1, :), plot_position(2, :), plot_position(3, :));
+hold on
+plot3(plot_desired_position(1, :), plot_desired_position(2, :), plot_desired_position(3, :), 'r-.')
 title('Trajectory');
 xlabel('X');
 ylabel('Y');
