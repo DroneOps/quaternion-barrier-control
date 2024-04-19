@@ -68,7 +68,8 @@ restriction_radius = 3;
 desired_orientation = randrot;
 
 % Init error
-desired_position = [cos(0);sin(0);(sin(0)+1)*2];
+% desired_position = [cos(0);sin(0);(sin(0)+1)*2];
+desired_position = [0.4+cos(t);sin(t);sin(0.5*t)/2];
 % desired_position = [t;t;t];
 orientation_error = orientation;
 position_error = position - desired_position;
@@ -84,7 +85,8 @@ time = zeros(1, TIME_STEPS);
 
 % Simulation loop
 while t < SIM_TIME
-    desired_position = [cos(t);sin(t);(sin(0.05*t)+1)*2];
+    % desired_position = [cos(t);sin(t);(sin(0.05*t)+1)*2];
+    desired_position = [0.4+cos(t);sin(t);sin(0.5*t)/2];
     % desired_position = [t;t;t];
     position_error_prev  = position_error;
     position_error = position - desired_position;

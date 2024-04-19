@@ -16,7 +16,7 @@ INERTIA = [16.6e-6, 0.83e-6, 0.72e-6;
 BODY_FRAME_THRUST = [0;0;1];
 
 % Simulation parameters
-SIM_TIME = 40; % seconds
+SIM_TIME = 21; % seconds
 DELTA_TIME = 0.001;
 TIME_STEPS = SIM_TIME / DELTA_TIME;
 i = 1;
@@ -27,8 +27,8 @@ MAX_ROT_C = 10;
 
 % Randomly initialize position
 % position = rand(3,1)*20-10;
-% position = [0;0;0];
-position = [-1;-1;1];
+position = [0;0;0];
+% position = [-1;-1;1];
 
 % Non-Randomly initialize orientation
 orientation = quaternion(1,0,0,0);
@@ -38,7 +38,7 @@ velocity_error = velocity;
 angular_velocity = [0;0;0];
 
 % Control Variables
-trans_kp_o = [4;4;3];
+trans_kp_o = [4;4;4];
 trans_kd_o = [3.75;3.75;3.75];
 
 trans_kp = trans_kp_o;
@@ -55,14 +55,19 @@ ang_kd = ang_kd_o;
 
 %lambda 1 affects the proportional gain both related to the reference
 % and the restriction
-% lambda 2 affects the rate of change of said gain
+% lambda 2 affects the rate of change of said gain; the lower it is, the
+% faster it can change, this is reflected as the trajectory gets near the
+% restriction, as it rejects it more strongly. However it looses
+% controlablity when it reaches a certain distance from the restriction.
+% Said distance would be lower if this number was higher, but this would
+% also imply 
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [1.5 0.005 1.5 0.75];
+lambda = [1.5 0.005 1 0.0015];
 alpha = [1 1 1 1];
 
-restriction_radius = 2;
+restriction_radius = 1.5;
 lambda_max = restriction_radius^2;
 
 % Desired variables
@@ -70,10 +75,12 @@ lambda_max = restriction_radius^2;
 desired_orientation = randrot;
 
 % Init error
-desired_position = [cos(0);sin(0);0.1*t];
+% desired_position = [cos(t);sin(t);0.04*t];
+desired_position = [0.4+cos(t);sin(t);sin(0.5*t)/2];
 % desired_position = [t;t;t];
 orientation_error = orientation;
 position_error = position - desired_position;
+
 
 %Auxiliary variables for plotting 
 plot_position = zeros(3, TIME_STEPS);
@@ -86,8 +93,8 @@ time = zeros(1, TIME_STEPS);
 
 % Simulation loop
 while t < SIM_TIME
-    desired_position = [cos(t);sin(t);0.05*t];
-    % desired_position = [cos(t);0.05*t;sin(t)];
+    % desired_position = [cos(t);sin(t);0.04*t];
+    desired_position = [0.4+cos(t);sin(t);sin(0.5*t)/2];
     % desired_position = [t;t;t];
     position_error_prev  = position_error;
     position_error = position - desired_position;
@@ -99,9 +106,9 @@ while t < SIM_TIME
     
     for j = 1:3
        kp_dot = (-lambda(1)/(lambda_max-norm(r)^2))*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
-       kd_dot = lambda(3)*position_error(j)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
+       kd_dot = lambda(3)*(velocity_error(j))*(position_error(j))*sign(position_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
 
-        % kp_dot = lambda(1)*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
+        % kp_dot = -lambda(1)*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
         % kd_dot = lambda(3)*(position_error(j))*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
 
         trans_kp(j) = trans_kp(j) + kp_dot * DELTA_TIME;
