@@ -26,33 +26,36 @@ MAX_ROT_C = 10;
 position = 0;
 
 % Randomly intialize orientation
-theta_x = (rand - 0.5) * pi/2;  % Ángulo alrededor del eje x
-theta_y = (rand - 0.5) * pi/2;  % Ángulo alrededor del eje y
-theta_z = (rand - 0.5) * pi/2;  % Ángulo alrededor del eje z
-orientation = exp(0.5*quaternion(0,theta_x,theta_y,theta_z));
-% orientation = quaternion(1,0,0,0);s
-orientation = normalize(orientation);
+% theta_x = (rand - 0.5) * pi/2;  % Ángulo alrededor del eje x
+% theta_y = (rand - 0.5) * pi/2;  % Ángulo alrededor del eje y
+% theta_z = (rand - 0.5) * pi/2;  % Ángulo alrededor del eje z
+% orientation = exp(0.5*quaternion(0,theta_x,theta_y,theta_z));
+orientation = quaternion(1,0,0,0);s
+% orientation = normalize(orientation);
+
 velocity = [0;0;0];
 angular_velocity = [0;0;0];
 
 % Control Variables
-kp = 4;
-ki= 0;
+kp = 2;
+ki= 1;
 kd1 = 1;
 kd2 = 2;
-angular_kp = 20;
+angular_kp = 4;
 angular_ki = 0;
 angular_kd1 = 2;
 angular_kd2 = 6;
 k_gravity = -0.5525;
 
 % Desired variables
-desired_position = [0.4+cos(t);sin(t);sin(0.5*t)/2];
+% desired_position = [0.4+cos(t);sin(t);sin(0.5*t)/2];
+desired_position = [-0.7;-0.7;0];
 % desired_orientation = randrot;
 
 % Init error
 orientation_error = orientation;
 position_error = position - desired_position;
+position_error_sum = position_error;
 
 %Auxiliary variables for plotting 
 plot_position = zeros(3, TIME_STEPS);
@@ -65,7 +68,16 @@ time = zeros(1, TIME_STEPS);
 
 % Simulation loop
 while t < SIM_TIME
-    desired_position = [0.4+cos(t);sin(t);sin(0.5*t)/2];
+    % desired_position = [0.4+cos(t);sin(t);sin(0.5*t)/2];
+    if t < 6
+        desired_position = [-0.7;-0.7;0];
+    elseif t < 12
+        desired_position = [1.4;0;0];
+    elseif t < 18 
+        desired_position = [0.7;0.7;0]; 
+    else
+        desired_position = [0;0;0];
+    end
     t = t + DELTA_TIME;
     % Translational Control
     trans_control = -kp*(position - desired_position) - kd1*velocity;
@@ -75,15 +87,17 @@ while t < SIM_TIME
     end
     trans_control = trans_control + MASS*GRAVITY;
     
-    norm_thrust = norm(trans_control);
-    control_thrust = [0;0;0];
-    if norm_thrust ~= 0
-        control_thrust = trans_control/norm_thrust; %Fu
+    norm_trans_control = norm(trans_control);
+    control_direction = [0;0;0];
+    if norm_trans_control ~= 0
+        control_direction = trans_control/norm_trans_control; %Fu
     end
+    [~,frx,fry,frz] = parts(orientation*quaternion(0,0,0,1)*(orientation'));
+    control_thrust = trans_control(3)/dot([0;0;1],[frx;fry;frz]);
 
 
     % Orientation Control
-    desired_orientation = exp(0.5*log(quaternion([dot([0;0;1],control_thrust);[cross([0;0;1],control_thrust)]]')));
+    desired_orientation = exp(0.5*log(quaternion([dot([0;0;1],control_direction);[cross([0;0;1],control_direction)]]')));
     desired_orientation = normalize(desired_orientation);
     orientation_error_prev =  orientation_error;
     orientation_error = orientation*(desired_orientation');
@@ -102,8 +116,9 @@ while t < SIM_TIME
         
 
     % Update orientation and position
-    [~,ax,ay,az] = parts(orientation*quaternion(0,0,0,norm_thrust/MASS)*(orientation'));
-    velocity =  velocity + ( -1*GRAVITY +  [ax;ay;az])* DELTA_TIME;
+    [~,ax,ay,az] = parts(orientation*quaternion(0,0,0,control_thrust/MASS)*(orientation'));
+    az = az + (-1*GRAVITY(3));
+    velocity =  velocity + ([ax;ay;az])*DELTA_TIME;
     position = position + velocity * DELTA_TIME; 
     orientation_dot = 0.5*quaternion([0,angular_velocity'])*orientation;
     orientation = orientation + orientation_dot*DELTA_TIME;
@@ -113,6 +128,7 @@ while t < SIM_TIME
     
     % Update plotting matrix
     plot_position(:, i) = position;
+    position_error_sum = position_error_sum + position_error;
     plot_desired_position(:, i) = desired_position;
     [plot_attitude(1,i),plot_attitude(2,i),plot_attitude(3,i),plot_attitude(4,i)] = parts(orientation);
     [plot_desired_attitude(1,i),plot_desired_attitude(2,i),plot_desired_attitude(3,i),plot_desired_attitude(4,i)] = parts(desired_orientation);

@@ -17,7 +17,7 @@ BODY_FRAME_THRUST = [0;0;1];
 
 % Simulation parameters
 SIM_TIME = 20; % seconds
-DELTA_TIME = 0.001;
+DELTA_TIME = 0.01;
 TIME_STEPS = SIM_TIME / DELTA_TIME;
 i = 1;
 t = 0;

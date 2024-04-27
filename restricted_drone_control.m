@@ -16,9 +16,9 @@ INERTIA = [16.6e-6, 0.83e-6, 0.72e-6;
 BODY_FRAME_THRUST = [0;0;1];
 
 % Simulation parameters
-SIM_TIME = 30; % seconds
+SIM_TIME = 15; % seconds
 DELTA_TIME = 0.001;
-TIME_STEPS = SIM_TIME / DELTA_TIME;
+TIME_STEPS = SIM_TIME/DELTA_TIME;
 i = 1;
 t = 0;
 
@@ -44,8 +44,17 @@ trans_kd_o = [3.75;3.75;3.75];
 trans_kp = trans_kp_o;
 trans_kd = trans_kd_o;
 
-ang_kp_o = [28;28;28];
-ang_kd_o = [10;10;10];
+kp_dot = [0;0;0];
+kd_dot = [0;0;0];
+
+ang_kp_o = [150;150;150];
+ang_kd_o = [50;50;50];
+
+% ang_kp_o = [28;28;28];
+% ang_kd_o = [10;10;10];
+
+ang_kp_dot = [0;0;0];
+ang_kd_dot = [0;0;0];
 
 ang_kp = ang_kp_o;
 ang_kd = ang_kd_o;
@@ -64,8 +73,10 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [1.25 0.005 2.5 0.025];
-alpha = [3 0.005 4 0.005];
+lambda = [1.5 0.005 1.1 0.001];
+alpha = [6 0.005 8 0.005];
+% lambda = [1.25 0.005 2.5 0.025];
+% alpha = [3 0.005 4 0.005];
 
 restriction_radius = 1.5;
 lambda_max = restriction_radius^2;
@@ -76,10 +87,12 @@ desired_orientation = randrot;
 
 % Init error
 % desired_position = [cos(t);sin(t);0.04*t];
-desired_position = [0.4+cos(t);sin(t);sin(0.5*t)/2];
+% desired_position = [0.4+cos(t);sin(t);sin(0.5*t)*.5];
+desired_position = [-0.7;-0.7;0];
 % desired_position = [t;t;t];
 orientation_error = orientation;
 position_error = position - desired_position;
+position_error_sum = 0;
 
 
 %Auxiliary variables for plotting 
@@ -93,37 +106,59 @@ time = zeros(1, TIME_STEPS);
 
 % Simulation loop
 while t < SIM_TIME
+    discretization = t;
+
     % desired_position = [cos(t);sin(t);0.04*t];
-    desired_position = [0.4+cos(t);sin(t);sin(0.5*t)/2];
+    % desired_position = [0.4+cos(t);sin(t);sin(0.5*t)*.5];
+    if t < 2
+        desired_position = [-0.7;-0.7;0];
+    % else
+    %     desired_position = [1.4;0;0];
+    elseif t < 6
+        desired_position = [1.4;0;0];
+    elseif t < 9 
+        desired_position = [0;1.4;0]; 
+    else
+        desired_position = [0;0;0];
+    end
+
     % desired_position = [t;t;t];
     position_error_prev  = position_error;
     position_error = position - desired_position;
+    position_error_sum = position_error_sum + position_error;
     velocity_error = (position_error - position_error_prev)/DELTA_TIME;
     r = sqrt(position(1)^2 + position(2)^2 + position(3)^2); %position relative to the origin
     t = t + DELTA_TIME;
 
+
+
     % Estimate translational control gains
     
     for j = 1:3
-       kp_dot = (-lambda(1)/(lambda_max-norm(r)^2))*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
-       kd_dot = lambda(3)*(velocity_error(j))*(position_error(j))*sign(position_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j))*sign(position_error(j));
+       kp_dot(j) = (-lambda(1)/(lambda_max-norm(r)^2))*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
+       kd_dot(j) = lambda(3)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j))*sign(position_error(j));
 
-        % kp_dot = -lambda(1)*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
-        % kd_dot = lambda(3)*(position_error(j))*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
-
-        trans_kp(j) = trans_kp(j) + kp_dot * DELTA_TIME;
-        trans_kd(j) = trans_kd(j) + kd_dot * DELTA_TIME;
+  
+       trans_kp(j) = trans_kp(j) + kp_dot(j) * DELTA_TIME;
+       trans_kd(j) = trans_kd(j) + kd_dot(j) * DELTA_TIME;
+    
     end
  
     
     % Translational Control
     
-    trans_control = -MASS*(trans_kp.*position_error + trans_kd.*(velocity_error) - GRAVITY); 
-
-    control_thrust = trans_control/norm(trans_control);
+    trans_control = -MASS*(trans_kp.*position_error + trans_kd.*(velocity_error) + (-GRAVITY)); 
+    norm_trans_control = norm(trans_control);
+    control_direction = [0;0;0];
+    if norm_trans_control ~= 0
+        control_direction = trans_control/norm_trans_control; %Fu
+    end
+    
+    [~,frx,fry,frz] = parts(orientation*quaternion(0,0,0,1)*(orientation')); %Fth
+    control_thrust = trans_control(3)/dot([0;0;1],[frx;fry;frz]);
 
     % Orientation Control
-    desired_orientation = exp(0.5*log(quaternion([dot([0;0;1],control_thrust);[cross([0;0;1],control_thrust)]]')));
+    desired_orientation = exp(0.5*log(quaternion([dot([0;0;1],control_direction);[cross([0;0;1],control_direction)]]')));
     desired_orientation = normalize(desired_orientation);
     orientation_error_prev =  orientation_error;
     orientation_error = orientation*(desired_orientation');
@@ -138,17 +173,13 @@ while t < SIM_TIME
 
     % Estimate rotational control gains}
     for k = 1:3
-        ang_kp_dot = alpha(1)*(orientation_error_vector(k)) + alpha(2)*(ang_kp_o(k) - ang_kp(k));
-        ang_kd_dot = alpha(3)*(angular_velocity_error(k)) + alpha(4)*(ang_kd_o(k) - ang_kd(k));
+        ang_kp_dot(k) = alpha(1)*(orientation_error_vector(k)) + alpha(2)*(ang_kp_o(k) - ang_kp(k));
+        ang_kd_dot(k) = alpha(3)*(angular_velocity_error(k)) + alpha(4)*(ang_kd_o(k) - ang_kd(k));
 
-        ang_kp(k) = ang_kp(k) + ang_kp_dot * DELTA_TIME;
-        ang_kd(k) = ang_kd(k) + ang_kd_dot * DELTA_TIME;
+        ang_kp(k) = ang_kp(k) + ang_kp_dot(k) * DELTA_TIME;
+        ang_kd(k) = ang_kd(k) + ang_kd_dot(k) * DELTA_TIME;
     end
 
-    % if norm(orientation_error) < 0.0005
-    %     ang_kp = ang_kp_fixed;
-    %     ang_kd = ang_kd_fixed;
-    % end
     
     orientation_control = (-ang_kp.*orientation_error_vector)-(ang_kd.*angular_velocity_error);
 
@@ -156,8 +187,9 @@ while t < SIM_TIME
         
 
     % Update orientation and position
-    [~,ax,ay,az] = parts(orientation*quaternion(0,0,0,norm(trans_control)/MASS)*(orientation'));
-    velocity =  velocity + ( -1*GRAVITY +  [ax;ay;az])* DELTA_TIME;
+    [~,ax,ay,az] = parts(orientation*quaternion(0,0,0,norm(control_thrust)/MASS)*(orientation'));
+    az = az + (-GRAVITY(3));
+    velocity =  velocity + ([ax;ay;az])* DELTA_TIME;
     position = position + velocity * DELTA_TIME; 
     orientation_dot = 0.5*quaternion([0,angular_velocity'])*orientation;
     orientation = orientation + orientation_dot*DELTA_TIME;
@@ -172,6 +204,26 @@ while t < SIM_TIME
     [plot_desired_attitude(1,i),plot_desired_attitude(2,i),plot_desired_attitude(3,i),plot_desired_attitude(4,i)] = parts(desired_orientation);
     [plot_attitude_error(1,i),plot_attitude_error(2,i),plot_attitude_error(3,i),plot_attitude_error(4,i)] = parts(orientation_error);
     plot_angular_error(i) = norm(rotvec(orientation_error));
+    
+
+    %Reset adaptive control when a great change in trajectory occurs
+    for l = 1:3
+        if abs(position_error(l)) > (abs(position_error_prev(l))+0.2)
+            trans_kp = trans_kp_o;
+            trans_kd = trans_kd_o;
+             
+            kp_dot = [0;0;0];
+            kd_dot = [0;0;0];
+
+            ang_kp_dot = [0;0;0];
+            ang_kd_dot = [0;0;0];
+
+            ang_kp = ang_kp_o;
+            ang_kd = ang_kd_o;
+        end
+    end
+
+
     time(i) = t;
     i = i + 1;
 
