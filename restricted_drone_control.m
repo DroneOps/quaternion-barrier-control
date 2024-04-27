@@ -73,7 +73,7 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [1.5 0.005 1.1 0.001];
+lambda = [1.5 0.005 1.25 0.001];
 alpha = [6 0.005 8 0.005];
 % lambda = [1.25 0.005 2.5 0.025];
 % alpha = [3 0.005 4 0.005];
@@ -211,15 +211,15 @@ while t < SIM_TIME
         if abs(position_error(l)) > (abs(position_error_prev(l))+0.2)
             trans_kp = trans_kp_o;
             trans_kd = trans_kd_o;
-             
+
             kp_dot = [0;0;0];
             kd_dot = [0;0;0];
 
-            ang_kp_dot = [0;0;0];
-            ang_kd_dot = [0;0;0];
-
-            ang_kp = ang_kp_o;
-            ang_kd = ang_kd_o;
+            % ang_kp_dot = [0;0;0];
+            % ang_kd_dot = [0;0;0];
+            % 
+            % ang_kp = ang_kp_o;
+            % ang_kd = ang_kd_o;
         end
     end
 
