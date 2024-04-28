@@ -4,7 +4,7 @@ clc
 
 
 %% Drone parameters
-MASS = 0.5; % kg
+MASS = 0.027; % kg
 GRAVITY = [0;0;9.81];
 INERTIA = [16.6e-6, 0.83e-6, 0.72e-6;
         0.83e-6, 16.6e-6, 1.8e-6;
@@ -63,7 +63,7 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [1.5 0.005 0.1 0.005];
+lambda = [1.25 0.005 0.05 0.005];
 alpha = [6 0.005 8 0.005];
 
 restriction_radius = 1.5;
@@ -113,7 +113,7 @@ while t < SIM_TIME
     % Estimate translational control gains
     for j = 1:3
        trans_kp_dot(j) = (-lambda(1)/(lambda_max-norm(r)^2))*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
-       trans_kd_dot(j) = lambda(3)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j))*sign(position_error(j));
+       trans_kd_dot(j) = lambda(3)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
 
        trans_kp(j) = trans_kp(j) + trans_kp_dot(j) * DELTA_TIME;
        trans_kd(j) = trans_kd(j) + trans_kd_dot(j) * DELTA_TIME;

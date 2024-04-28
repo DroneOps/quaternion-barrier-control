@@ -4,7 +4,7 @@ clc
 
 
 %% Drone parameters
-MASS = 0.5; % kg
+MASS = 0.027; % kg
 GRAVITY = [0;0;9.81];
 INERTIA = [16.6e-6, 0.83e-6, 0.72e-6;
         0.83e-6, 16.6e-6, 1.8e-6;
