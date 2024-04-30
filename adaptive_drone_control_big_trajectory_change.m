@@ -114,7 +114,7 @@ while t < SIM_TIME
     for j = 1:3
        % trans_kp_dot(j) = (-lambda(1)/(lambda_max-norm(r)^2))*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
        kp_dot = lambda(1)*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
-       trans_kd_dot(j) = lambda(3)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j))*sign(position_error(j));
+       trans_kd_dot(j) = lambda(3)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
 
        trans_kp(j) = trans_kp(j) + trans_kp_dot(j) * DELTA_TIME;
        trans_kd(j) = trans_kd(j) + trans_kd_dot(j) * DELTA_TIME;
@@ -157,7 +157,7 @@ while t < SIM_TIME
     end
 
     orientation_control = (-ang_kp.*orientation_error_vector)-(ang_kd.*angular_velocity_error);
-    torque = INERTIA*orientation_control + cross(angular_velocity,INERTIA*angular_velocity);
+    torque = INERTIA*(orientation_control + cross(angular_velocity,INERTIA*angular_velocity));
         
     % Update orientation and position
     [~,ax,ay,az] = parts(orientation*quaternion(0,0,0,norm(control_thrust)/MASS)*(orientation'));

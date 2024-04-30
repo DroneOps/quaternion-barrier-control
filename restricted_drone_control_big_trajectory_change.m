@@ -156,7 +156,7 @@ while t < SIM_TIME
     end
 
     orientation_control = (-ang_kp.*orientation_error_vector)-(ang_kd.*angular_velocity_error);
-    torque = INERTIA*orientation_control + cross(angular_velocity,INERTIA*angular_velocity);
+    torque = INERTIA*(orientation_control + cross(angular_velocity,INERTIA*angular_velocity));
         
     % Update orientation and position
     [~,ax,ay,az] = parts(orientation*quaternion(0,0,0,norm(control_thrust)/MASS)*(orientation'));

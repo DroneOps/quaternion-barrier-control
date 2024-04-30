@@ -177,17 +177,25 @@ void controllerOutOfTree(control_t *control, const setpoint_t *setpoint, const s
     struct vec trans_kd_vec = mkvec(trans_kd[0], trans_kd[1], trans_kd[2]);
 
     // Translational control law equation
-    struct vec trans_control_law = vadd(
+    // -MASS*(trans_kp.*position_error + trans_kd.*(velocity_error) + (-GRAVITY)); 
+
+    // trans_kp.*position_error + trans_kd.*(velocity_error)
+    struct vec trans_control = vadd(
       veltmul(trans_kp_vec,posError),
       veltmul(trans_kd_vec,velError)) ;
-    trans_control_law.z -= GRAVITY_MAGNITUDE;
-    trans_control_law = vscl(-CF_MASS, trans_control_law);
-    float norm_trans_control = vmag(trans_control_law);
+    // -GRAVITY
+    trans_control.z -= GRAVITY_MAGNITUDE;
+    // *-MASS
+    trans_control = vscl(-CF_MASS, trans_control);
+
+    float norm_trans_control = vmag(trans_control);
     struct vec control_direction = vzero();
 
     if (norm_trans_control != 0){
-      control_direction = vdiv(trans_control_law,norm_trans_control);
+      control_direction = vdiv(trans_control,norm_trans_control);
     }
+
+    
 
     
 
