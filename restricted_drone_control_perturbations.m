@@ -63,7 +63,7 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [1.5 0.001 0.05 0.001];
+lambda = [6 0.001 1.5 0.025];
 alpha = [6 0.005 8 0.005];
 
 restriction_radius = 1.5;
@@ -103,12 +103,11 @@ while t < SIM_TIME
     end
 
     % Perturbations
-    position_pert = sin(t*.2)*.1;
-    velocity_pert = sin(t*.1)*.01;
-    orientation_pert = sin(t*.5)*.03;
-    angular_velocity_pert = sin(t*.3)*.02;
+    position_pert = sin(t*5)*.05;
+    velocity_pert = cos(t*5)*.25;
+
     
-    perturbation = sin(t*4) + sin(t)*.5 + sin(t*.5) +sin(t*.3);
+    % perturbation = sin(t*4) + sin(t)*.5 + sin(t*.5) +sin(t*.3);
 
     % desired_position = [t;t;t];
     position_error_prev  = position_error;
@@ -145,8 +144,8 @@ while t < SIM_TIME
     desired_orientation = normalize(desired_orientation);
     orientation_error_prev =  orientation_error;
     orientation_error = orientation*(desired_orientation');
-    orientation_error_vector = rotvec(orientation_error)' + orientation_pert; %Euler angle representation
-    angular_velocity_error = rotvec(orientation_error*orientation_error_prev')'/DELTA_TIME + angular_velocity_pert;
+    orientation_error_vector = rotvec(orientation_error)'; %Euler angle representation
+    angular_velocity_error = rotvec(orientation_error*orientation_error_prev')'/DELTA_TIME;
     
     if norm(rotvec(orientation_error)) > pi || norm(rotvec(orientation_error))< -pi
         disp('Inverting reference')
@@ -169,9 +168,6 @@ while t < SIM_TIME
     % Update orientation and position
     [~,ax,ay,az] = parts(orientation*quaternion(0,0,0,norm(control_thrust)/MASS)*(orientation'));
     az = az + (-GRAVITY(3));
-    ax = ax ;
-    ay = ay ;
-    az = az ;
     velocity =  velocity + ([ax;ay;az])* DELTA_TIME;
     position = position + velocity * DELTA_TIME; 
     orientation_dot = 0.5*quaternion([0,angular_velocity'])*orientation;
@@ -189,20 +185,25 @@ while t < SIM_TIME
     plot_angular_error(i) = norm(rotvec(orientation_error));
     
 
+
     % Reset adaptive control when a great change in trajectory occurs
-    for l = 1:3
-        if abs(position_error(l)) > (abs(position_error_prev(l))+0.2)
-            trans_kp = trans_kp_o;
-            trans_kd = trans_kd_o;
 
-            trans_kp_dot = [0;0;0];
-            trans_kd_dot = [0;0;0];
-
+    if i~=1
+        for l = 1:3
+            if (plot_desired_position(l,i) ~= plot_desired_position(l,i-1))
+                trans_kp(l) = trans_kp_o(l);
+                trans_kd(l) = trans_kd_o(l);
+    
+                trans_kp_dot(l) = 0;
+                trans_kd_dot(l) = 0;
+    
+            end
         end
     end
-
     time(i) = t;
     i = i + 1;
+
+
 
 end
 
