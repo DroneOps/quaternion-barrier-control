@@ -95,9 +95,9 @@ while t < SIM_TIME
     if t < 2
         desired_position = [-0.7;-0.7;0];
     elseif t < 6
-        desired_position = [1.5;0;0];
+        desired_position = [1.7;0;0];
     elseif t < 9 
-        desired_position = [0;1.4;0]; 
+        desired_position = [0;1.8;0]; 
     else
         desired_position = [0;0;0];
     end
@@ -200,25 +200,29 @@ end
 %% Plotting
 figure;
 set(gcf,"Color",[1,1,1])
-set(gcf,"Position",[50,50,1920,1080])
+set(gcf,"Position",[0,0,1920,1080])
 plot3(plot_position(1, :), plot_position(2, :), plot_position(3, :),'LineWidth',2.5);
 hold on
-plot3(plot_desired_position(1, :), plot_desired_position(2, :), plot_desired_position(3, :), 'r-.', 'LineWidth',2.5);
-[sx,sy,sz] = sphere(30);
+plot3(plot_desired_position(1, :), plot_desired_position(2, :), plot_desired_position(3, :), 'LineStyle', 'none' , 'Marker', 'square', MarkerSize=10, MarkerFaceColor='r');
+[sx,sy,sz] = sphere(60);
 s = surf(sx*restriction_radius,sy*restriction_radius,sz*restriction_radius);
 s.FaceAlpha = 0.5;
 s.EdgeColor = 'none';
+s.FaceColor = 'interp';
 xlabel('Coord. X [m]','FontSize',24);
 ylabel('Coord. Y [m]','FontSize',24);
 zlabel('Coord. Z [m]','FontSize',24);
-legend('Position ', 'Reference ', 'FontSize', 24)
+legend('Position ', 'Reference ', 'FontSize', 24, Box="off")
 axis([-3 3 -3 3 -3 3])
+view([-30,60])
+set(gca,"LineWidth", 2)
 grid off;
-print('../Plots/3D_Trajectory', '-depsc2')
+print('../Plots/adaptive_control/3D_Trajectory', '-depsc2')
 
 figure;
 set(gcf,"Color",[1,1,1])
-set(gcf,"Position",[50,50,1920,1080])
+set(gcf,"Position",[0,0,1920,1080])
+set(gcf,"Renderer","painters")
 plot(time, plot_attitude(1, :), 'k','LineWidth',2.5);
 hold on
 plot(time, plot_attitude(2, :), 'r','LineWidth',2.5);
@@ -228,16 +232,18 @@ plot(time, plot_desired_attitude(1, :), 'k-.','LineWidth',2.5);
 plot(time, plot_desired_attitude(2, :), 'r-.','LineWidth',2.5);
 plot(time, plot_desired_attitude(3, :), 'g-.','LineWidth',2.5);
 plot(time, plot_desired_attitude(4, :), 'b-.','LineWidth',2.5);
-legend('q_0','q_1','q_2','q_3','q_{r0}','q_{r1}','q_{r2}','q_{r3}','FontSize',22);
+legend('q_0','q_1','q_2','q_3','q_{r0}','q_{r1}','q_{r2}','q_{r3}','FontSize',22, Box="off");
 xlabel('Time [s]', 'FontSize',24);
 ylabel('Attitude Quaternion', 'FontSize',24);
+box("off")
 grid off;
-box("off");
-print('../Plots/Attitude', '-depsc2')
+
+print('../Plots/adaptive_control/Attitude', '-depsc2')
 
 figure;
 set(gcf,"Color",[1,1,1])
 set(gcf,"Position",[50,50,1920,1080])
+set(gcf,"Renderer","painters")
 plot(time,plot_position(1, :), 'k','LineWidth',2.5);
 hold on
 plot(time,plot_position(2, :), 'b','LineWidth',2.5);
@@ -246,10 +252,9 @@ plot(time,plot_desired_position(1, :), 'k-.','LineWidth',2.5);
 plot(time,plot_desired_position(2, :), 'b-.','LineWidth',2.5);
 plot(time,plot_desired_position(3, :), 'r-.','LineWidth',2.5);
 ylim([-5 5])
-legend('p_0','p_1','p_2', 'FontSize',24)
+legend('p_0','p_1','p_2', 'FontSize',24, Box="off")
 xlabel('Time [s]','FontSize',24);
 ylabel('Position [m]','FontSize',24);
 grid off;
-box("off");
-print('../Plots/Position', '-depsc2')
-
+box("off")
+print('../Plots/adaptive_control/Position', '-depsc2')

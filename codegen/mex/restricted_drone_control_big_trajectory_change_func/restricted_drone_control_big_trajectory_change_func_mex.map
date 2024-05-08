@@ -1,0 +1,12 @@
+MEX {
+	global:
+		mexFunction;
+		mexfilerequiredapiversion;
+		emlrtMexFcnProperties;
+		restricted_drone_control_big_trajectory_change_func;
+		restricted_drone_control_big_trajectory_change_func_initialize;
+		restricted_drone_control_big_trajectory_change_func_terminate;
+		restricted_drone_control_big_trajectory_change_func_atexit;
+	local:
+		*;
+};

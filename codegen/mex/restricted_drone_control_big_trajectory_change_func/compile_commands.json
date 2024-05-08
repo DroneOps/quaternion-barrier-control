@@ -1,0 +1,104 @@
+[
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  restricted_drone_control_big_trajectory_change_func_data.c -o build/glnxa64/restricted_drone_control_big_trajectory_change_func_data.o",
+    "file": "restricted_drone_control_big_trajectory_change_func_data.c",
+    "output": "build/glnxa64/restricted_drone_control_big_trajectory_change_func_data.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  rt_nonfinite.c -o build/glnxa64/rt_nonfinite.o",
+    "file": "rt_nonfinite.c",
+    "output": "build/glnxa64/rt_nonfinite.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  restricted_drone_control_big_trajectory_change_func_initialize.c -o build/glnxa64/restricted_drone_control_big_trajectory_change_func_initialize.o",
+    "file": "restricted_drone_control_big_trajectory_change_func_initialize.c",
+    "output": "build/glnxa64/restricted_drone_control_big_trajectory_change_func_initialize.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  restricted_drone_control_big_trajectory_change_func_terminate.c -o build/glnxa64/restricted_drone_control_big_trajectory_change_func_terminate.o",
+    "file": "restricted_drone_control_big_trajectory_change_func_terminate.c",
+    "output": "build/glnxa64/restricted_drone_control_big_trajectory_change_func_terminate.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  restricted_drone_control_big_trajectory_change_func.c -o build/glnxa64/restricted_drone_control_big_trajectory_change_func.o",
+    "file": "restricted_drone_control_big_trajectory_change_func.c",
+    "output": "build/glnxa64/restricted_drone_control_big_trajectory_change_func.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  rotvec.c -o build/glnxa64/rotvec.o",
+    "file": "rotvec.c",
+    "output": "build/glnxa64/rotvec.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  sumMatrixIncludeNaN.c -o build/glnxa64/sumMatrixIncludeNaN.o",
+    "file": "sumMatrixIncludeNaN.c",
+    "output": "build/glnxa64/sumMatrixIncludeNaN.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  mldivide.c -o build/glnxa64/mldivide.o",
+    "file": "mldivide.c",
+    "output": "build/glnxa64/mldivide.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  warning.c -o build/glnxa64/warning.o",
+    "file": "warning.c",
+    "output": "build/glnxa64/warning.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  interface/_coder_restricted_drone_control_big_trajectory_change_func_api.c -o build/glnxa64/_coder_restricted_drone_control_big_trajectory_change_func_api.o",
+    "file": "interface/_coder_restricted_drone_control_big_trajectory_change_func_api.c",
+    "output": "build/glnxa64/_coder_restricted_drone_control_big_trajectory_change_func_api.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  interface/_coder_restricted_drone_control_big_trajectory_change_func_mex.c -o build/glnxa64/_coder_restricted_drone_control_big_trajectory_change_func_mex.o",
+    "file": "interface/_coder_restricted_drone_control_big_trajectory_change_func_mex.c",
+    "output": "build/glnxa64/_coder_restricted_drone_control_big_trajectory_change_func_mex.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  normalize.c -o build/glnxa64/normalize.o",
+    "file": "normalize.c",
+    "output": "build/glnxa64/normalize.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  log.c -o build/glnxa64/log.o",
+    "file": "log.c",
+    "output": "build/glnxa64/log.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  exp.c -o build/glnxa64/exp.o",
+    "file": "exp.c",
+    "output": "build/glnxa64/exp.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  div.c -o build/glnxa64/div.o",
+    "file": "div.c",
+    "output": "build/glnxa64/div.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  interface/_coder_restricted_drone_control_big_trajectory_change_func_info.c -o build/glnxa64/_coder_restricted_drone_control_big_trajectory_change_func_info.o",
+    "file": "interface/_coder_restricted_drone_control_big_trajectory_change_func_info.c",
+    "output": "build/glnxa64/_coder_restricted_drone_control_big_trajectory_change_func_info.o"
+  },
+  {
+    "directory": "/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control/codegen/mex/restricted_drone_control_big_trajectory_change_func",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -fwrapv -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -DNDEBUG -std=c99 -I \".\" -I \"/home/paco/Research/Quadrotor_State_Restricted_Control/quaternion-barrier-control\" -I \"./interface\" -I \"/usr/local/MATLAB/R2023b/extern/include\" -I \".\" -DMODEL=restricted_drone_control_big_trajectory_change_func_mex -msse2 -c  /usr/local/MATLAB/R2023b/extern/version/c_mexapi_version.c -o build/glnxa64/c_mexapi_version.o",
+    "file": "/usr/local/MATLAB/R2023b/extern/version/c_mexapi_version.c",
+    "output": "build/glnxa64/c_mexapi_version.o"
+  }
+]
