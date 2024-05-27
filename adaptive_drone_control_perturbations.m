@@ -63,8 +63,8 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [3 0.001 1.5 0.001];
-alpha = [8 0.005 10 0.005];
+lambda = [3 0.05 1.5 0.25];
+alpha = [3 0.05 4 0.1];
 
 restriction_radius = 1.5;
 lambda_max = restriction_radius^2;
@@ -107,8 +107,8 @@ while t < SIM_TIME
     % Perturbations
 
     position_pert = sin(t*5)*.05;
-    velocity_pert = cos(t*5)*.25;
-
+    % velocity_pert = cos(t*5)*.25;
+    velocity_pert = 0;
     % desired_position = [t;t;t];
     position_error_prev  = position_error;
     position_error = position - desired_position + position_pert;
@@ -116,6 +116,7 @@ while t < SIM_TIME
     r = sqrt(position(1)^2 + position(2)^2 + position(3)^2); %position relative to the origin
     t = t + DELTA_TIME;
 
+    
 
     % Estimate translational control gains
     for j = 1:3
@@ -146,7 +147,9 @@ while t < SIM_TIME
     orientation_error_prev =  orientation_error;
     orientation_error = orientation*(desired_orientation');
     orientation_error_vector = rotvec(orientation_error)'; %Euler angle representation
-    angular_velocity_error = rotvec(orientation_error*orientation_error_prev')'/DELTA_TIME;
+    % angular_velocity_error = rotvec(orientation_error*orientation_error_prev')'/DELTA_TIME;
+    [~,oex,oey,oez] = parts(2*orientation_error'*((orientation_error-orientation_error_prev)./DELTA_TIME));
+    angular_velocity_error = [oex;oey;oez];
     
     if norm(rotvec(orientation_error)) > pi || norm(rotvec(orientation_error))< -pi
         disp('Inverting reference')
@@ -154,6 +157,7 @@ while t < SIM_TIME
         orientation_error = (desired_orientation)*(orientation');
     end 
 
+    
     % Estimate rotational control gains
     for k = 1:3
         ang_kp_dot(k) = alpha(1)*(orientation_error_vector(k)) + alpha(2)*(ang_kp_o(k) - ang_kp(k));

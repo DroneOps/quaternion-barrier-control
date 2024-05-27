@@ -32,8 +32,8 @@ angular_velocity = [0;0;0];
 %% Control Variables
 
 %Translational control gains
-trans_kp_o = [12;12;12];
-trans_kd_o = [8;8;8];
+trans_kp_o = [8;8;8];
+trans_kd_o = [6.5;6.5;6.5];
 
 trans_kp = trans_kp_o;
 trans_kd = trans_kd_o;
@@ -63,8 +63,8 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [6.5 0.001 1.5 0.025];
-alpha = [6 0.005 8 0.005];
+lambda = [4.5 0.1 1.5 0.5];
+alpha = [6 0.05 8 0.05];
 
 restriction_radius = 1.5;
 lambda_max = restriction_radius^2;
@@ -81,11 +81,15 @@ position_error = position - desired_position;
 
 %% Auxiliary variables for plotting 
 plot_position = zeros(3, TIME_STEPS);
+plot_position_norm = zeros(1, TIME_STEPS);
+plot_constraint = zeros(2, TIME_STEPS);
 plot_desired_position = zeros(3, TIME_STEPS);
 plot_attitude = zeros(4, TIME_STEPS);
 plot_desired_attitude = zeros(4, TIME_STEPS);
 plot_attitude_error = zeros(4, TIME_STEPS);
 plot_angular_error = zeros(1, TIME_STEPS);
+plot_thrust = zeros(1, TIME_STEPS);
+plot_torque = zeros(3, TIME_STEPS);
 time = zeros(1, TIME_STEPS);
 
 %% Simulation loop
@@ -97,7 +101,7 @@ while t < SIM_TIME
     elseif t < 6
         desired_position = [1.7;0;0];
     elseif t < 9 
-        desired_position = [0;1.8;0]; 
+        desired_position = [0;2;0]; 
     else
         desired_position = [0;0;0];
     end
@@ -181,6 +185,7 @@ while t < SIM_TIME
     dot_w = (INERTIA)\(torque- cross(angular_velocity,INERTIA*angular_velocity));
     angular_velocity = angular_velocity + dot_w * DELTA_TIME;
     
+    
     % Update plotting matrix
     plot_position(:, i) = position;
     plot_desired_position(:, i) = desired_position;
@@ -188,7 +193,11 @@ while t < SIM_TIME
     [plot_desired_attitude(1,i),plot_desired_attitude(2,i),plot_desired_attitude(3,i),plot_desired_attitude(4,i)] = parts(desired_orientation);
     [plot_attitude_error(1,i),plot_attitude_error(2,i),plot_attitude_error(3,i),plot_attitude_error(4,i)] = parts(orientation_error);
     plot_angular_error(i) = norm(rotvec(orientation_error));
-    
+    plot_position_norm(:, i) = r;
+    plot_constraint(1, i) = restriction_radius;
+    plot_constraint(2, i) = -restriction_radius;
+    plot_thrust(1, i) = control_thrust;
+    plot_torque(:, i) = torque;
 
 
     % Reset adaptive control when a great change in trajectory occurs
@@ -228,16 +237,17 @@ s.FaceColor = 'interp';
 xlabel('Coord. X [m]','FontSize',24);
 ylabel('Coord. Y [m]','FontSize',24);
 zlabel('Coord. Z [m]','FontSize',24);
-legend('Position ', 'Reference ', 'FontSize', 24, Box="off")
+legend('Position ', 'Reference ', 'FontSize', 24, Box="off", Position=[0.65,0.7,0.1,0.1]);
 axis([-3 3 -3 3 -3 3])
-view([-30,60])
+axis equal
+view([35,60])
 set(gca,"LineWidth", 2)
 grid off;
-print('../Plots/restricted_control_pert/3D_Trajectory', '-depsc2')
+print('../Plots/restricted_control_pert/3D_Trajectory', '-depsc2', '-r500')
 
 figure;
 set(gcf,"Color",[1,1,1])
-set(gcf,"Position",[0,0,1920,1080])
+set(gcf,"Position",[80,220,1850,525])
 set(gcf,"Renderer","painters")
 plot(time, plot_attitude(1, :), 'k','LineWidth',2.5);
 hold on
@@ -248,30 +258,115 @@ plot(time, plot_desired_attitude(1, :), 'k-.','LineWidth',2.5);
 plot(time, plot_desired_attitude(2, :), 'r-.','LineWidth',2.5);
 plot(time, plot_desired_attitude(3, :), 'g-.','LineWidth',2.5);
 plot(time, plot_desired_attitude(4, :), 'b-.','LineWidth',2.5);
-legend('q_0','q_1','q_2','q_3','q_{r0}','q_{r1}','q_{r2}','q_{r3}','FontSize',22, Box="off");
+legend('q_0','q_1','q_2','q_3','q_{r0}','q_{r1}','q_{r2}','q_{r3}','FontSize',22, Box="on", Color=[1,1,1], EdgeColor=[1,1,1]);
+set(gca,"FontSize", 15);
 xlabel('Time [s]', 'FontSize',24);
 ylabel('Attitude Quaternion', 'FontSize',24);
 box("off")
 grid off;
-
 print('../Plots/restricted_control_pert/Attitude', '-depsc2')
 
 figure;
 set(gcf,"Color",[1,1,1])
-set(gcf,"Position",[50,50,1920,1080])
+set(gcf,"Position",[80,220,1850,525])
 set(gcf,"Renderer","painters")
-plot(time,plot_position(1, :), 'k','LineWidth',2.5);
+plot(time,plot_position(1, :), 'r','LineWidth',2.5);
 hold on
-plot(time,plot_position(2, :), 'b','LineWidth',2.5);
-plot(time,plot_position(3, :), 'r','LineWidth',2.5);
-plot(time,plot_desired_position(1, :), 'k-.','LineWidth',2.5);
-plot(time,plot_desired_position(2, :), 'b-.','LineWidth',2.5);
-plot(time,plot_desired_position(3, :), 'r-.','LineWidth',2.5);
-ylim([-5 5])
-legend('p_0','p_1','p_2', 'FontSize',24, Box="off")
+plot(time,plot_position(2, :), 'g','LineWidth',2.5);
+plot(time,plot_position(3, :), 'b','LineWidth',2.5);
+plot(time,plot_desired_position(1, :), 'r-.','LineWidth',2.5);
+plot(time,plot_desired_position(2, :), 'g-.','LineWidth',2.5);
+plot(time,plot_desired_position(3, :), 'b-.','LineWidth',2.5);
+ylim([-2 2])
+legend('p_x','p_y','p_z', 'p_x_r','p_y_r','p_z_r', 'FontSize',24, Box="on", Color=[1,1,1], EdgeColor=[1,1,1])
+set(gca,"FontSize", 15);
 xlabel('Time [s]','FontSize',24);
 ylabel('Position [m]','FontSize',24);
+% axes('FontSize',24);
 grid off;
 box("off")
 print('../Plots/restricted_control_pert/Position', '-depsc2')
 
+figure;
+set(gcf,"Color",[1,1,1])
+set(gcf,"Position",[80,220,1850,525])
+set(gcf,"Renderer","painters")
+plot(time,plot_position(1, :), 'r','LineWidth',2.5);
+hold on
+plot(time,plot_desired_position(1, :), 'r-.','LineWidth',2.5);
+ylim([-2 2])
+legend('p_x', 'p_r_x', 'FontSize',24, Box="on", Color=[1,1,1], EdgeColor=[1,1,1])
+set(gca,"FontSize", 15);
+xlabel('Time [s]','FontSize',24);
+ylabel('Position [m]','FontSize',24);
+grid off;
+box("off")
+print('../Plots/restricted_control_pert/Position_x', '-depsc2')
+
+figure;
+set(gcf,"Color",[1,1,1])
+set(gcf,"Position",[80,220,1850,525])
+set(gcf,"Renderer","painters")
+plot(time,plot_position(2, :), 'g','LineWidth',2.5); 
+hold on
+plot(time,plot_desired_position(2, :), 'g-.','LineWidth',2.5);
+ylim([-2 2])
+legend('p_y', 'p_r_y', 'FontSize',24, Box="on", Color=[1,1,1], EdgeColor=[1,1,1])
+set(gca,"FontSize", 15);
+xlabel('Time [s]','FontSize',24);
+ylabel('Position [m]','FontSize',24);
+grid off;
+box("off")
+print('../Plots/restricted_control_pert/Position_y', '-depsc2')
+
+figure;
+set(gcf,"Color",[1,1,1])
+set(gcf,"Position",[80,220,1850,525])
+set(gcf,"Renderer","painters")
+plot(time,plot_position(3, :), 'b','LineWidth',2.5);
+hold on
+plot(time,plot_desired_position(3, :), 'b-.','LineWidth',2.5);
+ylim([-2 2])
+legend('p_z','p_r_z', 'FontSize',24, Box="on", Color=[1,1,1], EdgeColor=[1,1,1])
+set(gca,"FontSize", 15);
+xlabel('Time [s]','FontSize',24);
+ylabel('Position [m]','FontSize',24);
+grid off;
+box("off")
+print('../Plots/restricted_control_pert/Position_z', '-depsc2')
+
+figure;
+set(gcf,"Color",[1,1,1])
+set(gcf,"Position",[80,220,1850,525])
+set(gcf,"Renderer","painters")
+plot(time,plot_position_norm(1, :), 'k','LineWidth',2.5);
+hold on
+plot(time,plot_constraint(1, :), 'y','LineWidth',2.5);
+% plot(time,plot_constraint(2, :), 'y','LineWidth',2.5);
+ylim([-0.5 2])
+legend('position norm','sphere constraint', 'FontSize',24, Box="on", Color=[1,1,1], EdgeColor=[1,1,1])
+set(gca,"FontSize", 15);
+xlabel('Time [s]','FontSize',24);
+ylabel('Position [m]','FontSize',24);
+grid off;
+box("off")
+print('../Plots/restricted_control_pert/Constraint', '-depsc2')
+
+
+figure;
+set(gcf,"Color",[1,1,1])
+set(gcf,"Position",[80,220,1850,525])
+set(gcf,"Renderer","painters")
+plot(time,plot_thrust(1, :), 'k','LineWidth',2.5);
+hold on
+plot(time,plot_torque(1, :), 'r','LineWidth',2.5);
+plot(time,plot_torque(2, :), 'g','LineWidth',2.5);
+plot(time,plot_torque(3, :), 'b','LineWidth',2.5);
+ylim([-2 2])
+legend('Thrust','Torque_x','Torque_y','Torque_z', 'FontSize',24, Box="on", Color=[1,1,1], EdgeColor=[1,1,1])
+set(gca,"FontSize", 15);
+xlabel('Time [s]','FontSize',24);
+ylabel('Position [m]','FontSize',24);
+grid off;
+box("off")
+print('../Plots/restricted_control_pert/ControlInputs', '-depsc2')

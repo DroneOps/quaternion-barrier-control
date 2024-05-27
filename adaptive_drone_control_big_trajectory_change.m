@@ -12,7 +12,7 @@ INERTIA = [16.6e-6, 0.83e-6, 0.72e-6;
 BODY_FRAME_THRUST = [0;0;1];
 
 %% Simulation parameters
-SIM_TIME = 15; % seconds
+SIM_TIME = 14; % seconds
 DELTA_TIME = 0.001;
 TIME_STEPS = SIM_TIME/DELTA_TIME;
 i = 1;
@@ -32,8 +32,8 @@ angular_velocity = [0;0;0];
 %% Control Variables
 
 %Translational control gains
-trans_kp_o = [4;4;4];
-trans_kd_o = [3.75;3.75;3.75];
+trans_kp_o = [6;6;6];
+trans_kd_o = [5;5;5];
 
 trans_kp = trans_kp_o;
 trans_kd = trans_kd_o;
@@ -63,8 +63,8 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [1.5 0.001 0.05 0.005];
-alpha = [3 0.005 4 0.005];
+lambda = [2 1.5 0.75 2];
+alpha = [1.5 0.05 2 0.1];
 
 restriction_radius = 1.5;
 lambda_max = restriction_radius^2;
@@ -104,7 +104,7 @@ while t < SIM_TIME
 
     % desired_position = [t;t;t];
     position_error_prev  = position_error;
-    position_error = position - desired_position;
+    position_error = desired_position - position;
     velocity_error = (position_error - position_error_prev)/DELTA_TIME;
     r = sqrt(position(1)^2 + position(2)^2 + position(3)^2); %position relative to the origin
     t = t + DELTA_TIME;
@@ -113,7 +113,7 @@ while t < SIM_TIME
     % Estimate translational control gains
     for j = 1:3
        % trans_kp_dot(j) = (-lambda(1)/(lambda_max-norm(r)^2))*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
-       kp_dot = lambda(1)*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
+       trans_kp_dot(j) = lambda(1)*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
        trans_kd_dot(j) = lambda(3)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
 
        trans_kp(j) = trans_kp(j) + trans_kp_dot(j) * DELTA_TIME;
@@ -123,7 +123,7 @@ while t < SIM_TIME
  
     
     % Translational Control
-    trans_control = -MASS*(trans_kp.*position_error + trans_kd.*(velocity_error) + (-GRAVITY)); 
+    trans_control = MASS*(trans_kp.*position_error + trans_kd.*(velocity_error) + (GRAVITY)); 
     norm_trans_control = norm(trans_control);
     control_direction = [0;0;0];
     if norm_trans_control ~= 0

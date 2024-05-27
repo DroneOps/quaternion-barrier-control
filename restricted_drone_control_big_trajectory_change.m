@@ -32,8 +32,8 @@ angular_velocity = [0;0;0];
 %% Control Variables
 
 %Translational control gains
-trans_kp_o = [12;12;12];
-trans_kd_o = [8;8;8];
+trans_kp_o = [6;6;6];
+trans_kd_o = [5;5;5];
 
 trans_kp = trans_kp_o;
 trans_kd = trans_kd_o;
@@ -63,10 +63,10 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [6 0.001 1.5 0.025];
-alpha = [6 0.005 8 0.005];
+lambda = [2 1.5 0.75 2];
+alpha = [1.5 0.05 2 0.1];
 
-restriction_radius = 1.5;
+restriction_radius = 0.5;
 lambda_max = restriction_radius^2;
 
 %% Desired variables
@@ -86,6 +86,7 @@ plot_attitude = zeros(4, TIME_STEPS);
 plot_desired_attitude = zeros(4, TIME_STEPS);
 plot_attitude_error = zeros(4, TIME_STEPS);
 plot_angular_error = zeros(1, TIME_STEPS);
+plot_trans_gains = zeros(3, TIME_STEPS);
 time = zeros(1, TIME_STEPS);
 
 %% Simulation loop
@@ -93,11 +94,11 @@ while t < SIM_TIME
 
 
     if t < 2
-        desired_position = [-0.7;-0.7;0];
+        desired_position = [-0.3;0.3;0];
     elseif t < 6
-        desired_position = [1.7;0;0];
-    elseif t < 9 
-        desired_position = [0;1.8;0]; 
+        desired_position = [-0.3;-0.3;0];
+    elseif t < 9
+        desired_position = [0;-0.6;0]; 
     else
         desired_position = [0;0;0];
     end
@@ -106,18 +107,26 @@ while t < SIM_TIME
     position_error_prev  = position_error;
     position_error = position - desired_position;
     velocity_error = (position_error - position_error_prev)/DELTA_TIME;
-    r = sqrt(position(1)^2 + position(2)^2 + position(3)^2); %position relative to the origin
+    r = position(1)^2 + position(2)^2 + position(3)^2; %position relative to the origin
     t = t + DELTA_TIME;
 
 
     % Estimate translational control gains
     for j = 1:3
-       trans_kp_dot(j) = (-lambda(1)/(lambda_max-norm(r)^2))*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
+       trans_kp_dot(j) = (-lambda(1)/(restriction_radius-sqrt(r)))*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
        trans_kd_dot(j) = lambda(3)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
 
        trans_kp(j) = trans_kp(j) + trans_kp_dot(j) * DELTA_TIME;
        trans_kd(j) = trans_kd(j) + trans_kd_dot(j) * DELTA_TIME;
-    
+        if trans_kp(j) < 0
+           trans_kp(j) = 0;
+        elseif trans_kp(j) > trans_kp_o(j)
+            trans_kp(j) = trans_kp_o(j);
+        end
+
+        % if trans_kd(j) > trans_kd_o(j)
+        %     trans_kd(j) = trans_kd_o(j);
+        % end
     end
  
     
@@ -181,22 +190,23 @@ while t < SIM_TIME
     [plot_desired_attitude(1,i),plot_desired_attitude(2,i),plot_desired_attitude(3,i),plot_desired_attitude(4,i)] = parts(desired_orientation);
     [plot_attitude_error(1,i),plot_attitude_error(2,i),plot_attitude_error(3,i),plot_attitude_error(4,i)] = parts(orientation_error);
     plot_angular_error(i) = norm(rotvec(orientation_error));
+    plot_trans_gains(:,i) = trans_kp;
     
 
     % Reset adaptive control when a great change in trajectory occurs
 
-    if i~=1
-        for l = 1:3
-            if (plot_desired_position(l,i) ~= plot_desired_position(l,i-1))
-                trans_kp(l) = trans_kp_o(l);
-                trans_kd(l) = trans_kd_o(l);
-    
-                trans_kp_dot(l) = 0;
-                trans_kd_dot(l) = 0;
-    
-            end
-        end
-    end
+    % if i~=1
+    %     for l = 1:3
+    %         if (plot_desired_position(l,i) ~= plot_desired_position(l,i-1))
+    %             trans_kp(l) = trans_kp_o(l);
+    %             trans_kd(l) = trans_kd_o(l);
+    % 
+    %             trans_kp_dot(l) = 0;
+    %             trans_kd_dot(l) = 0;
+    % 
+    %         end
+    %     end
+    % end
 
     % if ()
 
@@ -221,9 +231,10 @@ s.FaceColor = 'interp';
 xlabel('Coord. X [m]','FontSize',24);
 ylabel('Coord. Y [m]','FontSize',24);
 zlabel('Coord. Z [m]','FontSize',24);
-legend('Position ', 'Reference ', 'FontSize', 24, Box="off")
-axis([-3 3 -3 3 -3 3])
-view([-30,60])
+legend('Position ', 'Reference ', 'FontSize', 24, Box="off", Position=[0.65,0.7,0.1,0.1]);
+axis([-1 1 -1 1 -1 1])
+% axis equal
+view([35,60])
 set(gca,"LineWidth", 2)
 grid off;
 print('../Plots/restricted_control/3D_Trajectory', '-depsc2')
@@ -259,7 +270,7 @@ plot(time,plot_position(3, :), 'r','LineWidth',2.5);
 plot(time,plot_desired_position(1, :), 'k-.','LineWidth',2.5);
 plot(time,plot_desired_position(2, :), 'b-.','LineWidth',2.5);
 plot(time,plot_desired_position(3, :), 'r-.','LineWidth',2.5);
-ylim([-5 5])
+ylim([-3 3])
 legend('p_0','p_1','p_2', 'FontSize',24, Box="off")
 xlabel('Time [s]','FontSize',24);
 ylabel('Position [m]','FontSize',24);
@@ -267,3 +278,17 @@ grid off;
 box("off")
 print('../Plots/restricted_control/Position', '-depsc2')
 
+figure;
+set(gcf,"Color",[1,1,1])
+set(gcf,"Position",[50,50,1920,1080])
+plot(time,plot_trans_gains(1, :), 'k','LineWidth',2.5);
+hold on
+plot(time,plot_trans_gains(2, :), 'b','LineWidth',2.5);
+plot(time,plot_trans_gains(3, :), 'r','LineWidth',2.5);
+% ylim([-3 3])
+legend('kp_0','kp_1','kp_2', 'FontSize',24, Box="off")
+xlabel('Time [s]','FontSize',24);
+ylabel('Position [m]','FontSize',24);
+grid off;
+box("off")
+print('../Plots/restricted_control/Position', '-depsc2')

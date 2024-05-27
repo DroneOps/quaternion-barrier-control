@@ -30,7 +30,7 @@ position = 0;
 % theta_y = (rand - 0.5) * pi/2;  % Ángulo alrededor del eje y
 % theta_z = (rand - 0.5) * pi/2;  % Ángulo alrededor del eje z
 % orientation = exp(0.5*quaternion(0,theta_x,theta_y,theta_z));
-orientation = quaternion(1,0,0,0);s
+orientation = quaternion(1,0,0,0);
 % orientation = normalize(orientation);
 
 velocity = [0;0;0];
