@@ -24,7 +24,7 @@ MAX_TRANS_C = 9.5;
 MAX_ROT_C = 10;
 
 %% Initialize state variables
-position = [0;0;0];
+position = [0.4-cos(0);sin(0);sin(0)*.5];
 orientation = quaternion(1,0,0,0);
 orientation = normalize(orientation);
 velocity = [0;0;0];
@@ -65,8 +65,8 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [1.5 0.001 1.25 0.001];
-alpha = [6 0.005 8 0.005];
+lambda = [50 0.9 1.5 0.25];
+alpha = [1.5 0.05 2 0.1];
 
 restriction_radius = 1.5;
 lambda_max = restriction_radius^2;
@@ -77,7 +77,7 @@ lambda_max = restriction_radius^2;
 desired_orientation = quaternion(1,0,0,0);
 
 % desired_position = [cos(t);sin(t);0.04*t];
-desired_position = [0.4+cos(t);sin(t);sin(0.5*t)*.5];
+desired_position = [0.4-cos(t);sin(t);sin(0.5*t)*.5];
 
 
 % Error
@@ -96,11 +96,12 @@ time = zeros(1, TIME_STEPS);
 
 %% Simulation loop
 while t < SIM_TIME
-    if mod(t, discretization_factor) == 0
-        discretization_variable = discretization_variable + DELTA_TIME*di;
-    end
+    % if mod(t, discretization_factor) == 0
+    %     discretization_variable = discretization_variable + DELTA_TIME*di;
+    % end
     % desired_position = [cos(t);sin(t);0.04*t];
-    desired_position = [0.4+cos(discretization_variable);sin(discretization_variable);sin(0.5*discretization_variable)*.5];
+    % desired_position = [0.4-cos(t);sin(t);sin(0.5*t)*.5];
+    desired_position = [0.4-cos(t);sin(t);sin(0.5*t)*.5];
 
     position_error_prev  = position_error;
     position_error = position - desired_position;
@@ -112,10 +113,10 @@ while t < SIM_TIME
     % Estimate translational control gains
     for j = 1:3
        trans_kp_dot(j) = (-lambda(1)/(lambda_max-norm(r)^2))*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
-       trans_kd_dot(j) = lambda(3)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j))*sign(position_error(j));
+       trans_kd_dot(j) = lambda(3)*(velocity_error(j))*trans_kp_dot(j) + lambda(4)*(trans_kd_o(j) - trans_kd(j))*sign(position_error(j));
 
-       trans_kp(j) = trans_kp(j) + trans_kp_dot(j) * DELTA_TIME;
-       trans_kd(j) = trans_kd(j) + trans_kd_dot(j) * DELTA_TIME;
+       trans_kp(j) = trans_kp(j)*0.98 + trans_kp_dot(j) * DELTA_TIME;
+       trans_kd(j) = trans_kd(j)*0.98 + trans_kd_dot(j) * DELTA_TIME;
     
     end
  

@@ -17,7 +17,7 @@ DELTA_TIME = 0.001;
 TIME_STEPS = SIM_TIME/DELTA_TIME;
 i = 1;
 t = 0;
-discretization_factor = 1000;
+discretization_factor = 10;
 discretization_variable = 0;
 
 MAX_TRANS_C = 9.5;
@@ -34,8 +34,8 @@ angular_velocity = [0;0;0];
 %% Control Variables
 
 %Translational control gains
-trans_kp_o = [30;30;30];
-trans_kd_o = [25;25;25];
+trans_kp_o = [12;12;12];
+trans_kd_o = [8;8;8];
 
 trans_kp = trans_kp_o;
 trans_kd = trans_kd_o;
@@ -65,10 +65,9 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [2 1.5 0.5 0.5];
-alpha = [1.5 0.05 2 0.1];
-
-restriction_radius = 1.5;
+lambda = [50 15 5 0.25];
+alpha = [3 0.5 4 0.1];
+restriction_radius = 0.5;
 lambda_max = restriction_radius^2;
 
 %% Desired variables
@@ -77,7 +76,7 @@ lambda_max = restriction_radius^2;
 desired_orientation = quaternion(1,0,0,0);
 
 % desired_position = [cos(t);sin(t);0.04*t];
-desired_position = [0.4+cos(t);sin(t);sin(0.5*t)*.5];
+desired_position = [0.4+cos(t);sin(t);sin(0.5*t)*.5]/2;
 
 
 % Error
@@ -100,7 +99,7 @@ while t < SIM_TIME
         discretization_variable = t;
     end
     % desired_position = [cos(t);sin(t);0.04*t];
-    desired_position = [0.7+cos(t);sin(t);sin(0.5*t)*.5];
+    desired_position = [0.7+cos(discretization_variable);sin(discretization_variable);sin(0.5*discretization_variable)*.5];
 
     position_error_prev  = position_error;
     position_error = position - desired_position;
@@ -178,16 +177,16 @@ while t < SIM_TIME
     
 
     %Reset adaptive control when a great change in trajectory occurs
-    for l = 1:3
-        if abs(position_error(l)) > (abs(position_error_prev(l))+0.2)
-            trans_kp = trans_kp_o;
-            trans_kd = trans_kd_o;
-
-            trans_kp_dot = [0;0;0];
-            trans_kd_dot = [0;0;0];
-
-        end
-    end
+    % for l = 1:3
+    %     if abs(position_error(l)) > (abs(position_error_prev(l))+0.2)
+    %         trans_kp = trans_kp_o;
+    %         trans_kd = trans_kd_o;
+    % 
+    %         trans_kp_dot = [0;0;0];
+    %         trans_kd_dot = [0;0;0];
+    % 
+    %     end
+    % end
 
     time(i) = t;
     i = i + 1;

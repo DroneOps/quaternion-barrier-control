@@ -165,7 +165,7 @@ while t < SIM_TIME
     % Estimate rotational control gains
     for k = 1:3
         ang_kp_dot(k) = alpha(1)*(orientation_error_vector(k)) + alpha(2)*(ang_kp_o(k) - ang_kp(k));
-        ang_kd_dot(k) = alpha(3)*(angular_velocity_error(k)) + alpha(4)*(ang_kd_o(k) - ang_kd(k));
+        ang_kd_dot(k) = alpha(3)*(angular_velocity_error(k))*ang_kp_dot(j) + alpha(4)*(ang_kd_o(k) - ang_kd(k));
 
         ang_kp(k) = ang_kp(k) + ang_kp_dot(k) * DELTA_TIME;
         ang_kd(k) = ang_kd(k) + ang_kd_dot(k) * DELTA_TIME;
