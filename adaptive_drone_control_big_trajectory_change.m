@@ -32,7 +32,7 @@ angular_velocity = [0;0;0];
 %% Control Variables
 
 %Translational control gains
-trans_kp_o = [6;6;6];
+trans_kp_o = [32;32;32];
 trans_kd_o = [5;5;5];
 
 trans_kp = trans_kp_o;
@@ -63,8 +63,8 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [1.25 0.005 2.5 0.025];
-alpha = [3 0.005 4 0.005];
+lambda = [15 0.5 0.5 15];
+alpha = [6 0.005 8 0.005];
 
 restriction_radius = 1.5;
 lambda_max = restriction_radius^2;

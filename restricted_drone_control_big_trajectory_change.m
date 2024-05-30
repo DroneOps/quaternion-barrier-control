@@ -24,7 +24,8 @@ MAX_ROT_C = 10.0;
 %% Initialize state variables
 stop = 3;
 slide = 0.2;
-position = [slide+cos(3+t);sin(3+t);sin(0.5*t)*.5]/3;
+% position = [slide+cos(3+t);sin(3+t);sin(0.5*t)*.5]/3;
+position = [0;0;0];
 orientation = quaternion(1,0,0,0);
 orientation = normalize(orientation);
 velocity = [0;0;0];
@@ -34,7 +35,7 @@ angular_velocity = [0;0;0];
 %% Control Variables
 
 %Translational control gains
-trans_kp_o = 4*[8;8;8];
+trans_kp_o = [32;32;32];
 trans_kd_o = [6;6;6];
 
 trans_kp = trans_kp_o;
@@ -65,13 +66,13 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-% lambda = [1.6 5 0.5 0.05];
+% lambda = [1.6 5 0.5 1];
 % alpha = [1.5 0.05 2 0.02];
 % lambda = [6 0.5 1.5 0.1];
 % alpha = [3 0.1 4 0.1];
 % lambda = [100 17 0 0];
 % alpha = [0 0 0 0];
-lambda = [30 50 1 15];
+lambda = [30 50 0.5 15];
 alpha = [6 0.05 8 0.05];
 restriction_radius = 0.5;
 lambda_max = restriction_radius^2;
@@ -86,6 +87,7 @@ desired_position = position;
 orientation_error = orientation;
 position_error = position - desired_position;
 
+
 %% Auxiliary variables for plotting 
 plot_position = zeros(3, TIME_STEPS);
 plot_desired_position = zeros(3, TIME_STEPS);
@@ -97,6 +99,8 @@ plot_attitude_error = zeros(4, TIME_STEPS);
 plot_angular_error = zeros(1, TIME_STEPS);
 plot_trans_gains = zeros(3, TIME_STEPS);
 plot_trans_kd = zeros(3, TIME_STEPS);
+plot_torques = zeros(3, TIME_STEPS);
+plot_thrust = zeros(1, TIME_STEPS);
 time = zeros(1, TIME_STEPS);
 
 discretization_v = 0.002;
@@ -107,12 +111,13 @@ while t < SIM_TIME
     
 
     step = step+0.0005;
+    % step = step+0.001;
     if t < 20
         size = size+0.00002;
     else
         size = size-0.00002;
     end
-
+    % size = size+0.00004;
     
 
 
@@ -138,27 +143,33 @@ while t < SIM_TIME
     velocity_error = (position_error - position_error_prev)/DELTA_TIME;
 
     r = sqrt(position(1)^2 + position(2)^2 + position(3)^2); %position relative to the origin
+    rd = sqrt(desired_position(1)^2 + desired_position(2)^2 + desired_position(3)^2);
     reduction_v = 0.9999;
     if r >= restriction_radius*reduction_v
-        rd = sqrt(desired_position(1)^2 + desired_position(2)^2 + desired_position(3)^2);
         theta = atan2(desired_position(2),desired_position(1));
         beta = acos(desired_position(3)/rd);
         position(1) = restriction_radius*reduction_v*sin(beta)*cos(theta);
         position(2) = restriction_radius*reduction_v*sin(beta)*sin(theta);
         position(3) = restriction_radius*reduction_v*cos(beta);
         r = sqrt(position(1)^2 + position(2)^2 + position(3)^2);
+        if restriction_radius - rd < -0.09
+           position_error(1) = position(1) - (restriction_radius + 0.09)*sin(beta)*cos(theta);
+           position_error(2) = position(2) - (restriction_radius + 0.09)*sin(beta)*sin(theta);
+           position_error(3) = position(3) - (restriction_radius + 0.09)*cos(beta);
+        end
     end
     t = t + DELTA_TIME;
 
     approx_v = 1;
     % Estimate translational control gains
     for j = 1:3
-       trans_kp_dot(j) = (-lambda(1)/(restriction_radius-r))*abs(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
+       
+
+       trans_kp_dot(j) = ( -lambda(1)/(restriction_radius-r))*abs(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
        % trans_kp_dot(j) = lambda(1)*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
        trans_kd_dot(j) = lambda(3)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
        trans_kp(j) = trans_kp(j)*approx_v + trans_kp_dot(j) * DELTA_TIME;
        trans_kd(j) = trans_kd(j)*approx_v + trans_kd_dot(j) * DELTA_TIME;
-
 
 
         % if trans_kp(j) > trans_kp_o(j)
@@ -236,6 +247,8 @@ while t < SIM_TIME
     plot_angular_error(i) = norm(rotvec(orientation_error));
     plot_trans_gains(:,i) = trans_kp;
     plot_trans_kd(:,i) = trans_kd;
+    plot_torques(:, i) = torque;
+    plot_thrust(:, i) = control_thrust;
     
 
     % Reset adaptive control when a great change in trajectory occurs
@@ -350,7 +363,7 @@ plot(time,plot_trans_gains(1, :), 'k','LineWidth',2.5);
 hold on
 plot(time,plot_trans_gains(2, :), 'b','LineWidth',2.5);
 plot(time,plot_trans_gains(3, :), 'r','LineWidth',2.5);
-ylim([-20 20])
+ylim([149.5 150.5])
 legend('kp_0','kp_1','kp_2', 'FontSize',24, Box="off")
 xlabel('Time [s]','FontSize',24);
 ylabel('Trans kp [m]','FontSize',24);
@@ -372,3 +385,31 @@ ylabel('Trans kd [m]','FontSize',24);
 grid off;
 box("off")
 print('../Plots/restricted_control/tkd', '-depsc2')
+
+figure
+set(gcf,"Color",[1,1,1])
+set(gcf,"Position",[50,50,1920,1080])
+plot(time,plot_torques(1, :), 'k','LineWidth',2.5);
+hold on
+plot(time,plot_torques(2, :), 'b','LineWidth',2.5);
+plot(time,plot_torques(3, :), 'r','LineWidth',2.5);
+ylim([-1 1])
+legend('tau_0','tau_1','tau_2', 'FontSize',24, Box="off")
+xlabel('Time [s]','FontSize',24);
+ylabel('Torques [N/m]','FontSize',24);
+grid off;
+box("off")
+print('../Plots/restricted_control/torques', '-depsc2')
+
+figure
+set(gcf,"Color",[1,1,1])
+set(gcf,"Position",[50,50,1920,1080])
+plot(time,plot_thrust(1, :), 'k','LineWidth',2.5);
+hold on
+ylim([-0 1])
+legend('thrust', 'FontSize',24, Box="off")
+xlabel('Time [s]','FontSize',24);
+ylabel('Thrust [N]','FontSize',24);
+grid off;
+box("off")
+print('../Plots/restricted_control/thrust', '-depsc2')
