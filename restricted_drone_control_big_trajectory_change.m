@@ -12,7 +12,7 @@ INERTIA = [16.6e-6, 0.83e-6, 0.72e-6;
 BODY_FRAME_THRUST = [0;0;1];
 
 %% Simulation parameters
-SIM_TIME = 40 ; % seconds
+SIM_TIME = 20 ; % seconds
 DELTA_TIME = 0.001;
 TIME_STEPS = SIM_TIME/DELTA_TIME;
 i = 1;
@@ -25,7 +25,7 @@ MAX_ROT_C = 10.0;
 stop = 3;
 slide = 0.2;
 % position = [slide+cos(3+t);sin(3+t);sin(0.5*t)*.5]/3;
-position = [0;0;0];
+position = [0;0;-0.3];
 orientation = quaternion(1,0,0,0);
 orientation = normalize(orientation);
 velocity = [0;0;0];
@@ -35,8 +35,17 @@ angular_velocity = [0;0;0];
 %% Control Variables
 
 %Translational control gains
+
+% Adaptive
+% trans_kp_o = [4;4;4];
+% trans_kd_o = [3.75;3.75;3.75];
+
+%Restriction
 trans_kp_o = [32;32;32];
-trans_kd_o = [6;6;6];
+trans_kd_o = [3.75;3.75;3.75];
+
+% trans_kp_o = [150;150;150];
+% trans_kd_o = [50;50;50];
 
 trans_kp = trans_kp_o;
 trans_kd = trans_kd_o;
@@ -45,8 +54,11 @@ trans_kp_dot = [0;0;0];
 trans_kd_dot = [0;0;0];
 
 %Rotational control gains
-ang_kp_o = [150;150;150];
-ang_kd_o = [50;50;50];
+ang_kp_o = [80;80;80];
+ang_kd_o = [30;30;30];
+
+% ang_kp_o = [28;28;28];
+% ang_kd_o = [10;10;10];
 
 ang_kp_dot = [0;0;0];
 ang_kd_dot = [0;0;0];
@@ -66,14 +78,22 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-% lambda = [1.6 5 0.5 1];
-% alpha = [1.5 0.05 2 0.02];
+
+%Adaptive gains
+% lambda = [4 0.1 1.5 0.5];
+% alpha = [3 0.05 1 0.05];
+
+%Restriction gains
+lambda = [30 50 1.5 0.5];
+alpha = [3 0.05 1 0.05];
+
+
 % lambda = [6 0.5 1.5 0.1];
 % alpha = [3 0.1 4 0.1];
 % lambda = [100 17 0 0];
 % alpha = [0 0 0 0];
-lambda = [30 50 0.5 15];
-alpha = [6 0.05 8 0.05];
+% lambda = [30 50 0.5 15];
+% alpha = [6 0.05 8 0.05];
 restriction_radius = 0.5;
 lambda_max = restriction_radius^2;
 
@@ -166,7 +186,7 @@ while t < SIM_TIME
        
 
        trans_kp_dot(j) = ( -lambda(1)/(restriction_radius-r))*abs(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
-       % trans_kp_dot(j) = lambda(1)*(position_error(j))*sign(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
+       % trans_kp_dot(j) = lambda(1)*abs(position_error(j)) + lambda(2)*(trans_kp_o(j) - trans_kp(j));
        trans_kd_dot(j) = lambda(3)*(velocity_error(j)) + lambda(4)*(trans_kd_o(j) - trans_kd(j));
        trans_kp(j) = trans_kp(j)*approx_v + trans_kp_dot(j) * DELTA_TIME;
        trans_kd(j) = trans_kd(j)*approx_v + trans_kd_dot(j) * DELTA_TIME;
@@ -215,7 +235,7 @@ while t < SIM_TIME
 
     % Estimate rotational control gains
     for k = 1:3
-        ang_kp_dot(k) = alpha(1)*(orientation_error_vector(k)) + alpha(2)*(ang_kp_o(k) - ang_kp(k));
+        ang_kp_dot(k) = alpha(1)*abs(orientation_error_vector(k)) + alpha(2)*(ang_kp_o(k) - ang_kp(k));
         ang_kd_dot(k) = alpha(3)*(angular_velocity_error(k)) + alpha(4)*(ang_kd_o(k) - ang_kd(k));
 
         ang_kp(k) = ang_kp(k)*approx_v + ang_kp_dot(k) * DELTA_TIME;
