@@ -33,7 +33,10 @@ angular_velocity = [0;0;0];
 
 %Translational control gains
 trans_kp_o = [12;12;12];
-trans_kd_o = [8;8;8];
+trans_kd_o = [9;9;9];
+
+% trans_kp_o = [7;7;7];
+% trans_kd_o = [3.75;3.75;3.75];
 
 trans_kp = trans_kp_o;
 trans_kd = trans_kd_o;
@@ -63,8 +66,8 @@ ang_kd = ang_kd_o;
 % lambda 3 affects velocity and 4 affects its rate of change
 % so on can be inferred for alph, however, restrictions are only related
 % to position.
-lambda = [3 0.05 1.5 0.25];
-alpha = [3 0.05 4 0.1];
+lambda = [8 0.75 4 0.5];
+alpha = [3 0.05 1 0.5];
 
 restriction_radius = 1.5;
 lambda_max = restriction_radius^2;
@@ -84,6 +87,7 @@ position_error = position - desired_position;
 %% Auxiliary variables for plotting 
 plot_position = zeros(3, TIME_STEPS);
 plot_desired_position = zeros(3, TIME_STEPS);
+plot_trans_gains = zeros(3, TIME_STEPS);
 plot_attitude = zeros(4, TIME_STEPS);
 plot_desired_attitude = zeros(4, TIME_STEPS);
 plot_attitude_error = zeros(4, TIME_STEPS);
@@ -184,6 +188,7 @@ while t < SIM_TIME
     % Update plotting matrix
     plot_position(:, i) = position;
     plot_desired_position(:, i) = desired_position;
+    plot_trans_gains(:,i) = trans_kp;
     [plot_attitude(1,i),plot_attitude(2,i),plot_attitude(3,i),plot_attitude(4,i)] = parts(orientation);
     [plot_desired_attitude(1,i),plot_desired_attitude(2,i),plot_desired_attitude(3,i),plot_desired_attitude(4,i)] = parts(desired_orientation);
     [plot_attitude_error(1,i),plot_attitude_error(2,i),plot_attitude_error(3,i),plot_attitude_error(4,i)] = parts(orientation_error);
@@ -247,8 +252,23 @@ xlabel('Time [s]', 'FontSize',24);
 ylabel('Attitude Quaternion', 'FontSize',24);
 box("off")
 grid off;
-
 print('../Plots/adaptive_control_pert/Attitude', '-depsc2')
+
+
+figure;
+set(gcf,"Color",[1,1,1])
+set(gcf,"Position",[50,50,1920,1080])
+plot(time,plot_trans_gains(1, :), 'k','LineWidth',2.5);
+hold on
+plot(time,plot_trans_gains(2, :), 'b','LineWidth',2.5);
+plot(time,plot_trans_gains(3, :), 'r','LineWidth',2.5);
+ylim([149.5 150.5])
+legend('kp_0','kp_1','kp_2', 'FontSize',24, Box="off")
+xlabel('Time [s]','FontSize',24);
+ylabel('Trans kp [m]','FontSize',24);
+grid off;
+box("off")
+print('../Plots/adaptive_control/tkp', '-depsc2')
 
 figure;
 set(gcf,"Color",[1,1,1])

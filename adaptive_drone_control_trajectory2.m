@@ -34,8 +34,8 @@ velocity_error = velocity;
 angular_velocity = [0;0;0];
 
 % Control Variables
-kp_fixed = 4;
-kd_fixed = 2;
+kp_fixed = 30;
+kd_fixed = 40;
 
 kp = kp_fixed;
 kd = kd_fixed;
@@ -46,7 +46,7 @@ ang_kd_fixed = 6;
 ang_kp = ang_kp_fixed;
 ang_kd = ang_kd_fixed;
 
-lambda = [2 0.003 7 0.005];
+lambda = [8 1 4 0.05];
 alpha = [12 0.003 10 5];
 
 % Desired variables

@@ -107,8 +107,9 @@ while t < SIM_TIME
     end
 
     % Perturbations
-    position_pert = sin(t*5)*.05;
-    velocity_pert = cos(t*5)*.25;
+    position_pert = sin(t)*.05;
+    % velocity_pert = cos(t)*.25;
+    velocity_pert = 0;
 
     
     % perturbation = sin(t*4) + sin(t)*.5 + sin(t*.5) +sin(t*.3);
