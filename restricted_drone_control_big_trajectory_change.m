@@ -12,7 +12,7 @@ INERTIA = [16.6e-6, 0.83e-6, 0.72e-6;
 BODY_FRAME_THRUST = [0;0;1];
 
 %% Simulation parameters
-SIM_TIME = 23; % seconds
+SIM_TIME = 25; % seconds
 DELTA_TIME = 0.001;
 TIME_STEPS = SIM_TIME/DELTA_TIME;
 i = 1;
@@ -386,7 +386,7 @@ set(gca, "DataAspectRatio", [1 1 1])
 set(gca, "PlotBoxAspectRatio", [1 1 1])
 set(gca,"LineWidth", 2)
 set(gca,"FontSize", 20)
-set(gca,"LabelFontSizeMultiplier", 2)
+set(gca,"LabelFontSizeMultiplier", 1.5)
 view([45,40])
 grid off;
 print('../Plots/restricted_control/3D_Trajectory', '-depsc2')
@@ -565,6 +565,7 @@ legend('$\tau_x$','$\tau_y$','$\tau_z$', ...
     'Color', [1,1,1], 'EdgeColor', [1,1,1], ...
     'Position', [0.92,0.65,0.05,0.25]);
 set(gca,"FontSize", 30);
+set(gca,"LineWidth", 1.5);
 xlabel('Time [s]','FontSize',40);
 ylabel('Torques [N/m]','FontSize',40);
 grid off;

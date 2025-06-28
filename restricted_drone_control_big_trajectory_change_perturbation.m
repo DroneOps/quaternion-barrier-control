@@ -373,7 +373,7 @@ set(gca, "DataAspectRatio", [1 1 1])
 set(gca, "PlotBoxAspectRatio", [1 1 1])
 set(gca,"LineWidth", 2)
 set(gca,"FontSize", 20)
-set(gca,"LabelFontSizeMultiplier", 2)
+set(gca,"LabelFontSizeMultiplier", 1.5)
 view([45,40])
 % view([-266.321,49.2774])
 grid off;

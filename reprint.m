@@ -63,83 +63,83 @@ marker_space = 1 :400: 23000;
 % print('../Plots/restricted_control/Attitude', '-depsc2')
 
 
-figure;
-
-set(gcf,"Color",[1,1,1])
-set(gcf,"Position",[80,220,1850,525])
-set(gcf,"Renderer","painters")
-plot(time,plot_desired_position(1, :)+0.4, 'r','LineWidth',5);
-hold on
-plot(time,plot_position(1, :)+0.4, 'r-.','LineWidth',0.5, 'Marker','o','MarkerSize', 12, 'MarkerEdgeColor', 'k','MarkerFaceColor',[1,0.5,0],'MarkerIndices',marker_space);
-plot(time,plot_desired_position_adaptive(1, :), 'b','LineWidth',5);
-plot(time,plot_position_adaptive(1, :), 'b-.','LineWidth',0.5, 'Marker','o','MarkerSize', 12,'MarkerEdgeColor', 'k','MarkerFaceColor',[0,0.85,1],'MarkerIndices',marker_space);
-plot(time,plot_desired_position_pd(1, :)-0.4, 'g','LineWidth',5);
-plot(time,plot_position_pd(1, :)-0.4, 'g-.','LineWidth',0.5, 'Marker','o','MarkerSize', 12,'MarkerEdgeColor', 'k' ,'MarkerFaceColor',[0.85,1,0],'MarkerIndices',marker_space);
-ylim([-1 1])
-xlim([0 SIM_TIME])
-legend('r $p_{adx}$', 'r $p_{ax}$','a $p_{adx}$','a $p_{ax}$', 'pd $p_{adx}$', 'pd $p_{ax}$', ...
-    'FontSize',48, 'interpreter', 'latex', ...
-    'Color', [1,1,1], 'EdgeColor', [1,1,1], ...
-    'Position', [0.85,0.087,0.14,0.9]);
-set(gca,"FontSize", 30);
-set(gca,"OuterPosition", [-0.05,0,1,1])
-xlabel('Time [s]','FontSize',40);
-ylabel('Position [m]','FontSize',40);
-grid off;
-box("off")
-print('../Plots/traslational_plots/xPosition', '-depsc2')
-
-figure;
-
-set(gcf,"Color",[1,1,1])
-set(gcf,"Position",[80,220,1850,525])
-set(gcf,"Renderer","painters")
-plot(time,plot_desired_position(2, :)+0.4, 'r','LineWidth',5);
-hold on
-plot(time,plot_position(2, :)+0.4, 'r-.','LineWidth',0.5, 'Marker','o','MarkerSize', 12, 'MarkerEdgeColor', 'k','MarkerFaceColor',[1,0.5,0],'MarkerIndices',marker_space);
-plot(time,plot_desired_position_adaptive(2, :), 'b','LineWidth',5);
-plot(time,plot_position_adaptive(2, :), 'b-.','LineWidth',0.5, 'Marker','o','MarkerEdgeColor', 'k', 'MarkerSize', 12, 'MarkerFaceColor',[0,0.85,1],'MarkerIndices',marker_space);
-plot(time,plot_desired_position_pd(2, :)-0.4, 'g','LineWidth',5);
-plot(time,plot_position_pd(2, :)-0.4, 'g-.','LineWidth',0.5, 'Marker','o','MarkerEdgeColor', 'k', 'MarkerSize', 12, 'MarkerFaceColor',[0.85,1,0],'MarkerIndices',marker_space);
-ylim([-1 1])
-xlim([0 SIM_TIME])
-legend('r $p_{ady}$', 'r $p_{ay}$','a $p_{ady}$','a $p_{ay}$', 'pd $p_{ady}$', 'pd $p_{ay}$', ...
-    'FontSize',48, 'interpreter', 'latex', ...
-    'Color', [1,1,1], 'EdgeColor', [1,1,1], ...
-    'Position', [0.85,0.087,0.14,0.9]);
-set(gca,"FontSize", 30);
-set(gca,"OuterPosition", [-0.05,0,1,1])
-xlabel('Time [s]','FontSize',40);
-ylabel('Position [m]','FontSize',40);
-grid off;
-box("off")
-print('../Plots/traslational_plots/yPosition', '-depsc2')
-
-figure;
-
-set(gcf,"Color",[1,1,1])
-set(gcf,"Position",[80,220,1850,525])
-set(gcf,"Renderer","painters")
-plot(time,plot_desired_position(3, :)+0.4, 'r','LineWidth',5);
-hold on
-plot(time,plot_position(3, :)+0.4, 'r-.','LineWidth',0.5, 'Marker','o','MarkerEdgeColor', 'k', 'MarkerSize', 12, 'MarkerFaceColor',[1,0.5,0],'MarkerIndices',marker_space);
-plot(time,plot_desired_position_adaptive(3, :), 'b','LineWidth',5);
-plot(time,plot_position_adaptive(3, :), 'b-.','LineWidth',0.5, 'Marker','o','MarkerEdgeColor', 'k', 'MarkerSize', 12, 'MarkerFaceColor',[0,0.85,1],'MarkerIndices',marker_space);
-plot(time,plot_desired_position_pd(3, :)-0.4, 'g','LineWidth',5);
-plot(time,plot_position_pd(3, :)-0.4, 'g-.','LineWidth',0.5, 'Marker','o','MarkerEdgeColor', 'k', 'MarkerSize', 12,  'MarkerFaceColor',[0.85,1,0],'MarkerIndices',marker_space);
-ylim([-0.7 0.7])
-xlim([0 SIM_TIME])
-legend('r $p_{adz}$', 'r $p_{az}$','a $p_{adz}$','a $p_{az}$', 'pd $p_{adz}$', 'pd $p_{az}$', ...
-    'FontSize',48, 'interpreter', 'latex', ...
-    'Color', [1,1,1], 'EdgeColor', [1,1,1], ...
-    'Position', [0.85,0.087,0.14,0.9]);
-set(gca,"FontSize", 30);
-set(gca,"OuterPosition", [-0.05,0,1,1])
-xlabel('Time [s]','FontSize',40);
-ylabel('Position [m]','FontSize',40);
-grid off;
-box("off")
-print('../Plots/traslational_plots/zPosition', '-depsc2')
+% figure;
+% 
+% set(gcf,"Color",[1,1,1])
+% set(gcf,"Position",[80,220,1850,525])
+% set(gcf,"Renderer","painters")
+% plot(time,plot_desired_position(1, :)+0.4, 'r','LineWidth',5);
+% hold on
+% plot(time,plot_position(1, :)+0.4, 'r-.','LineWidth',0.5, 'Marker','o','MarkerSize', 12, 'MarkerEdgeColor', 'k','MarkerFaceColor',[1,0.5,0],'MarkerIndices',marker_space);
+% plot(time,plot_desired_position_adaptive(1, :), 'b','LineWidth',5);
+% plot(time,plot_position_adaptive(1, :), 'b-.','LineWidth',0.5, 'Marker','o','MarkerSize', 12,'MarkerEdgeColor', 'k','MarkerFaceColor',[0,0.85,1],'MarkerIndices',marker_space);
+% plot(time,plot_desired_position_pd(1, :)-0.4, 'g','LineWidth',5);
+% plot(time,plot_position_pd(1, :)-0.4, 'g-.','LineWidth',0.5, 'Marker','o','MarkerSize', 12,'MarkerEdgeColor', 'k' ,'MarkerFaceColor',[0.85,1,0],'MarkerIndices',marker_space);
+% ylim([-1 1])
+% xlim([0 SIM_TIME])
+% legend('r $p_{adx}$', 'r $p_{ax}$','a $p_{adx}$','a $p_{ax}$', 'pd $p_{adx}$', 'pd $p_{ax}$', ...
+%     'FontSize',48, 'interpreter', 'latex', ...
+%     'Color', [1,1,1], 'EdgeColor', [1,1,1], ...
+%     'Position', [0.85,0.087,0.14,0.9]);
+% set(gca,"FontSize", 30);
+% set(gca,"OuterPosition", [-0.05,0,1,1])
+% xlabel('Time [s]','FontSize',40);
+% ylabel('Position [m]','FontSize',40);
+% grid off;
+% box("off")
+% print('../Plots/traslational_plots/xPosition', '-depsc2')
+% 
+% figure;
+% 
+% set(gcf,"Color",[1,1,1])
+% set(gcf,"Position",[80,220,1850,525])
+% set(gcf,"Renderer","painters")
+% plot(time,plot_desired_position(2, :)+0.4, 'r','LineWidth',5);
+% hold on
+% plot(time,plot_position(2, :)+0.4, 'r-.','LineWidth',0.5, 'Marker','o','MarkerSize', 12, 'MarkerEdgeColor', 'k','MarkerFaceColor',[1,0.5,0],'MarkerIndices',marker_space);
+% plot(time,plot_desired_position_adaptive(2, :), 'b','LineWidth',5);
+% plot(time,plot_position_adaptive(2, :), 'b-.','LineWidth',0.5, 'Marker','o','MarkerEdgeColor', 'k', 'MarkerSize', 12, 'MarkerFaceColor',[0,0.85,1],'MarkerIndices',marker_space);
+% plot(time,plot_desired_position_pd(2, :)-0.4, 'g','LineWidth',5);
+% plot(time,plot_position_pd(2, :)-0.4, 'g-.','LineWidth',0.5, 'Marker','o','MarkerEdgeColor', 'k', 'MarkerSize', 12, 'MarkerFaceColor',[0.85,1,0],'MarkerIndices',marker_space);
+% ylim([-1 1])
+% xlim([0 SIM_TIME])
+% legend('r $p_{ady}$', 'r $p_{ay}$','a $p_{ady}$','a $p_{ay}$', 'pd $p_{ady}$', 'pd $p_{ay}$', ...
+%     'FontSize',48, 'interpreter', 'latex', ...
+%     'Color', [1,1,1], 'EdgeColor', [1,1,1], ...
+%     'Position', [0.85,0.087,0.14,0.9]);
+% set(gca,"FontSize", 30);
+% set(gca,"OuterPosition", [-0.05,0,1,1])
+% xlabel('Time [s]','FontSize',40);
+% ylabel('Position [m]','FontSize',40);
+% grid off;
+% box("off")
+% print('../Plots/traslational_plots/yPosition', '-depsc2')
+% 
+% figure;
+% 
+% set(gcf,"Color",[1,1,1])
+% set(gcf,"Position",[80,220,1850,525])
+% set(gcf,"Renderer","painters")
+% plot(time,plot_desired_position(3, :)+0.4, 'r','LineWidth',5);
+% hold on
+% plot(time,plot_position(3, :)+0.4, 'r-.','LineWidth',0.5, 'Marker','o','MarkerEdgeColor', 'k', 'MarkerSize', 12, 'MarkerFaceColor',[1,0.5,0],'MarkerIndices',marker_space);
+% plot(time,plot_desired_position_adaptive(3, :), 'b','LineWidth',5);
+% plot(time,plot_position_adaptive(3, :), 'b-.','LineWidth',0.5, 'Marker','o','MarkerEdgeColor', 'k', 'MarkerSize', 12, 'MarkerFaceColor',[0,0.85,1],'MarkerIndices',marker_space);
+% plot(time,plot_desired_position_pd(3, :)-0.4, 'g','LineWidth',5);
+% plot(time,plot_position_pd(3, :)-0.4, 'g-.','LineWidth',0.5, 'Marker','o','MarkerEdgeColor', 'k', 'MarkerSize', 12,  'MarkerFaceColor',[0.85,1,0],'MarkerIndices',marker_space);
+% ylim([-0.7 0.7])
+% xlim([0 SIM_TIME])
+% legend('r $p_{adz}$', 'r $p_{az}$','a $p_{adz}$','a $p_{az}$', 'pd $p_{adz}$', 'pd $p_{az}$', ...
+%     'FontSize',48, 'interpreter', 'latex', ...
+%     'Color', [1,1,1], 'EdgeColor', [1,1,1], ...
+%     'Position', [0.85,0.087,0.14,0.9]);
+% set(gca,"FontSize", 30);
+% set(gca,"OuterPosition", [-0.05,0,1,1])
+% xlabel('Time [s]','FontSize',40);
+% ylabel('Position [m]','FontSize',40);
+% grid off;
+% box("off")
+% print('../Plots/traslational_plots/zPosition', '-depsc2')
 % %
 % figure;
 % marker_space = 1 : 200: 23000;
@@ -267,21 +267,109 @@ print('../Plots/traslational_plots/zPosition', '-depsc2')
 % figure
 % set(gcf,"Color",[1,1,1])
 % set(gcf,"Position",[80,220,1850,525])
+% plot(time,plot_torques(1, :), 'k','LineWidth',5);
+% hold on
+% plot(time,plot_torques(2, :), 'b','LineWidth',5);
+% plot(time,plot_torques(3, :), 'r','LineWidth',5);
+% ylim([-1.6 1.6])
+% xlim([0 SIM_TIME])
+% legend('$\tau_x$','$\tau_y$','$\tau_z$', ...
+%     'FontSize',48, 'interpreter', 'latex', ...
+%     'Color', [1,1,1], 'EdgeColor', [1,1,1], ...
+%     'Position', [0.92,0.65,0.05,0.25]);
+% set(gca,"FontSize", 30);
+% set(gca,"LineWidth", 1.5);
+% xlabel('Time [s]','FontSize',40);
+% ylabel('Torques [N/m]','FontSize',40);
+% 
+% 
+% zoomX = [16 SIM_TIME]; % x-range of zoom
+% zoomY = [-0.5 0.5]; % y-range of zoom
+% 
+% 
+% % Use rectangle function
+% rectangle('Position', [zoomX(1), zoomY(1), diff(zoomX), diff(zoomY)], ...
+%           'EdgeColor', 'k', 'LineStyle', '--', 'LineWidth', 2.0);
+% 
+% box off
+
+
+
+% set(gca, "LineWidth", 2)
+% 
+% insetPos = [0.168831168831168,0.56952380952381,0.471861471861472,0.357142857142857]; % [x y width height] relative to figure
+% axInset = axes('Position', insetPos);
+% 
+% % Plot on inset axes
+% 
+% 
+% box on
+% 
 % plot(time,plot_torques(1, :), 'k','LineWidth',2.5);
 % hold on
 % plot(time,plot_torques(2, :), 'b','LineWidth',2.5);
 % plot(time,plot_torques(3, :), 'r','LineWidth',2.5);
-% ylim([-0.05 0.05])
-% xlim([15 SIM_TIME])
-% legend('$\tau_x$','$\tau_y$','$\tau_z$', ...
-%     'FontSize',24, 'interpreter', 'latex', ...
-%     'Color', [1,1,1], 'EdgeColor', [1,1,1], ...
-%     'Position', [0.92,0.65,0.05,0.25]);
-% xlabel('Time [s]','FontSize',24);
-% ylabel('Torques [N/m]','FontSize',24);
+% ylim([-0.03 0.03])
+% xlim([16 SIM_TIME])
+% axInset.LineWidth = 1.5;
+% title(axInset, "Zoomed in")
 % grid off;
-% box("off")
-% print('../Plots/restricted_control/torques', '-depsc2')
+
+%% Restricted Torque 
+figure
+set(gcf,"Color",[1,1,1])
+set(gcf,"Position",[73,12,1843,950])
+
+zoomX = [16 SIM_TIME];
+zoomY = [-0.005 0.005];
+
+% === (a) Main plot (top left)
+ax1 = axes('Position', [0.08,0.597894736842105,0.38825827455236,0.332105263157895]);
+plot(time,plot_torques(1, :), 'k','LineWidth',5); hold on
+plot(time,plot_torques(2, :), 'b','LineWidth',5);
+plot(time,plot_torques(3, :), 'r','LineWidth',5);
+ylim([-1.6 1.6]); xlim([0 SIM_TIME]);
+rectangle('Position', [zoomX(1), -0.5, diff(zoomX), 1], ...
+          'EdgeColor', 'k', 'LineStyle', '--', 'LineWidth', 2.0);
+set(gca,"FontSize", 30, "LineWidth", 1.5);
+xlabel('Time [s]','FontSize',40);
+ylabel('Torques [N/m]','FontSize',40);
+box off
+
+% === (b) Zoom tau_x (top right)
+ax2 = axes('Position', [0.556158437330441,0.597894736842105,0.417254476397178,0.332105263157895]);
+plot(time,plot_torques(1, :), 'k','LineWidth',2);
+ylim(zoomY); xlim(zoomX);
+set(gca,"FontSize", 30, "LineWidth", 1.5);
+xlabel('Time [s]','FontSize',40);
+ylabel('$\mathbf{\tau_x}$','FontSize',45,'Interpreter','latex');
+%title(' $\tau_x$', 'Interpreter','latex','FontSize',34);
+box off
+
+% === (c) Zoom tau_y (bottom left)
+ax3 = axes('Position', [0.08,0.07,0.387173087357569,0.331052631578947]);
+plot(time,plot_torques(2, :), 'b','LineWidth',2);
+ylim(zoomY); xlim(zoomX);
+set(gca,"FontSize", 30, "LineWidth", 1.5);
+xlabel('Time [s]','FontSize',40);
+ylabel('$\mathbf{\tau_y}$ ','FontSize',45,'Interpreter','latex');
+%title('Zoom $\tau_y$', 'Interpreter','latex','FontSize',34);
+box off
+
+% === (d) Zoom tau_z (bottom right)
+ax4 = axes('Position', [0.555615843733044,0.07,0.419424850786761,0.331052631578947]);
+plot(time,plot_torques(3, :), 'r','LineWidth',2);
+ylim(zoomY); xlim(zoomX);
+set(gca,"FontSize", 30, "LineWidth", 1.5);
+xlabel('Time [s]','FontSize',40);
+ylabel('$\mathbf{\tau_z}$','FontSize',45,'Interpreter','latex');
+%title('Zoom $\tau_z$', 'Interpreter','latex','FontSize',34);
+box off
+
+
+
+print('../Plots/restricted_control/torques', '-depsc2')
+
 %
 % figure
 % set(gcf,"Color",[1,1,1])
